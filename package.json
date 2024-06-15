@@ -1,0 +1,28 @@
+{
+  "name": "bloom-and-doom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MysteriousGrimReaper/bloom-and-doom.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MysteriousGrimReaper/bloom-and-doom/issues"
+  },
+  "homepage": "https://github.com/MysteriousGrimReaper/bloom-and-doom#readme",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "discord.js": "^14.15.3",
+    "keyv": "^4.5.4"
+  },
+  "devDependencies": {
+    "eslint": "^9.4.0"
+  }
+}

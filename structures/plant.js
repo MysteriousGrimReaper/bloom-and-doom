@@ -1,0 +1,59 @@
+const Action = require("./action.js");
+const Movement = require("./movement.js");
+module.exports = class Plant {
+	/**
+	 *
+	 * @param {PlantData} data
+	 */
+	constructor(data) {
+		this.position = new Movement(0, 0);
+		this.health = 1;
+
+		this.unlock_timer = 0;
+		this.cooldown = 1;
+		this.cooldown_timer = 0;
+		Object.assign(this, data);
+		this.max_health = this.health;
+	}
+	onPlant() {
+		this.cooldown_timer = this.cooldown;
+		return new Action({
+			sun_cost: this.sun_cost,
+			notes: `Planting ${this.name}`,
+		});
+	}
+	onDeath() {
+		return new Action({
+			notes: `${this.name} eaten by zombie`,
+		});
+	}
+	onEndTurn() {
+		return new Action({
+			notes: `Default action: do nothing (${this.name})`,
+		});
+	}
+	setPosition(x, y) {
+		this.position.x = x;
+		this.position.y = y;
+		return this;
+	}
+	move(movement) {
+		const { x, y, relative } = movement;
+		if (relative) {
+			this.position.x += x;
+			this.position.y += y;
+		} else {
+			this.position.x = x;
+			this.position.y = y;
+		}
+		return this;
+	}
+	setSunCost(cost) {
+		this.sun_cost = cost;
+
+		return this;
+	}
+	addSun(bonus = 0) {
+		return new Action({ sun_gain: bonus + this.sun_production });
+	}
+};
