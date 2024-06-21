@@ -56,7 +56,7 @@ class Peashooter extends Plant {
 			const z_index = zombie_list.indexOf(zombie_colliding);
 			zombie_list[z_index].damage(projectile.damage);
 			if (this.apply_effects) {
-				zombie_list[z_index].add_status(...this.apply_effects);
+				zombie_list[z_index].addStatus(...this.apply_effects);
 			}
 			return new Action({ notes: `Peashooter hit zombie` });
 		}
@@ -92,6 +92,63 @@ class Peashooter extends Plant {
 	}
 	onEndTurn(action_list) {
 		return this.shoot(action_list, this.direction);
+	}
+}
+class MelonPult extends Peashooter {
+	constructor(data) {
+		super({
+			name: `Melon-pult`,
+			sun_cost: 350,
+			damage: 3,
+			hidden: true,
+		});
+		Object.assign(this, data);
+	}
+	shoot(action_list, direction) {
+		const { zombie_list, board_width, board_height } = action_list;
+		const projectile = {
+			x: this.position.x,
+			y: this.position.y,
+			damage: this.damage,
+			direction,
+		};
+		let zombie_colliding = zombie_list.find(
+			(z) => z.position.x == projectile.x && z.position.y == projectile.y
+		);
+		const isOutOfBounds = (x, y) => {
+			return x < 0 || y < 0 || x >= board_width || y >= board_height;
+		};
+		while (
+			!isOutOfBounds(projectile.x, projectile.y)
+				? zombie_colliding == undefined
+				: false
+		) {
+			projectile.x += projectile.direction.x;
+			projectile.y += projectile.direction.y;
+			zombie_colliding = zombie_list.find((z) => {
+				return (
+					z.position.x == projectile.x && z.position.y == projectile.y
+				);
+			});
+		}
+		if (!zombie_colliding) {
+			return new Action({ notes: `Peashooter missed` });
+		} else {
+			const z_index = zombie_list.indexOf(zombie_colliding);
+			zombie_list[z_index].damage(projectile.damage);
+			zombie_list.forEach(z => {
+				const cost = Math.max(Math.abs(z.position.x - zombie_colliding.position.x),
+				Math.abs(z.position.y - zombie_colliding.position.y))
+				if (cost <= 1) {
+					z.damage(projectile.damage/2)
+					if (this.apply_effects) {
+						z.addStatus(...this.apply_effects);
+					}
+				}
+			});
+			
+			return new Action({ notes: `Melonpult hit zombie` });
+		}
 	}
 }
 module.exports = {
@@ -194,9 +251,61 @@ module.exports = {
 			super({
 				name: `Goo Peashooter`,
 				sun_cost: 175,
-				apply_effects: [`poison`],
+				apply_effects: [{name: `poison`, time: 3}],
 				hidden: true
 			});
+			Object.assign(this, data);
 		}
 	},
+	CabbagePult: class CabbagePult extends Peashooter {
+		constructor(data) {
+			super({
+				name: `Cabbage-pult`,
+				sun_cost: 100,
+				hidden: true,
+				mega_cabbage_timer: 3
+			});
+			Object.assign(this, data);
+		}
+		onEndTurn() {
+			this.mega_cabbage_timer--
+			if (this.mega_cabbage_timer <= 0) {
+				this.damage = 3
+			}
+			else {
+				this.damage = 1
+			}
+			this.mega_cabbage_timer = 3
+			return new Action({notes: `Cabbage-pult charges up`})
+		}
+	},
+	KernelPult: class KernelPult extends Peashooter {
+		constructor(data) {
+			super({
+				name: `Kernel-pult`,
+				sun_cost: 100,
+				hidden: true,
+				butter_timer: 3
+			});
+			Object.assign(this, data);
+		}
+		onEndTurn() {
+			this.butter_timer--
+			if (this.butter_timer <= 0) {
+				this.apply_effects = [{name: `frozen`, time: 2}]
+			}
+			else {
+				this.apply_effects = []
+			}
+			this.butter_timer = 3
+			return new Action({notes: `Kernel-pult butters up`})
+		}
+	},
+	MelonPult,
+	WinterMelon: class WinterMelon extends MelonPult {
+		constructor(data) {
+			super({sun_cost: 600, name: `Winter Melon`, apply_effects: [{name: `frozen`, time: 1}]})
+			Object.assign(this, data)
+		}
+	}
 };
