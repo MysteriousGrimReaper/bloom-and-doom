@@ -55,6 +55,9 @@ class Peashooter extends Plant {
 		} else {
 			const z_index = zombie_list.indexOf(zombie_colliding);
 			zombie_list[z_index].damage(projectile.damage);
+			if (this.apply_effects) {
+				zombie_list[z_index].add_status(...this.apply_effects);
+			}
 			return new Action({ notes: `Peashooter hit zombie` });
 		}
 	}
@@ -167,20 +170,9 @@ module.exports = {
 		constructor(data) {
 			super({
 				name: `Snow Pea`,
-				sun_cost: 150,
-				apply_effects: [`chill`],
-				unlock_timer: 999,
-			});
-			Object.assign(this, data);
-		}
-	},
-	LilyOfAlchemy: class LilyOfAlchemy extends Peashooter {
-		constructor(data) {
-			super({
-				name: `Lily of Alchemy`,
-				sun_cost: 200,
-				apply_effects: [`chill`],
-				unlock_timer: 999,
+				sun_cost: 175,
+				apply_effects: [{name: `frozen`, time: 1}],
+				hidden: true
 			});
 			Object.assign(this, data);
 		}
@@ -192,7 +184,7 @@ module.exports = {
 				sun_cost: 200,
 				damage: 2,
 				damage_type: `fire`,
-				unlock_timer: 999,
+				hidden: true
 			});
 		}
 	},
@@ -202,7 +194,7 @@ module.exports = {
 				name: `Goo Peashooter`,
 				sun_cost: 175,
 				apply_effects: [`poison`],
-				unlock_timer: 999,
+				hidden: true
 			});
 		}
 	},

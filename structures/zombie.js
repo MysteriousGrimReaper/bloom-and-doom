@@ -35,6 +35,10 @@ module.exports = class Zombie {
 		this.health -= hp;
 		return this;
 	}
+	addStatus(...statuses) {
+		this.status.push(...statuses)
+		return this
+	}
 	setPosition(x, y) {
 		this.position.x = x;
 		this.position.y = y;

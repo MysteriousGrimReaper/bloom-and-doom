@@ -102,7 +102,7 @@ actions.push(
 		}),
 	]
 );
-const ff = 6;
+const ff = 1;
 actions.push(...Array(ff).fill(new Action({ end_turn: true })));
 const valid = actions.validate();
 if (valid) {
@@ -317,7 +317,7 @@ async function drawBG() {
 				`🔄 ${Math.max(
 					temp_plant.unlock_timer,
 					temp_plant.cooldown_timer
-				)}`,
+				)}${temp_plant.unlock_timer <= 0 ? `/${temp_plant.cooldown}` : ``}`,
 				g_offset + 280,
 				155 + 40 * p
 			);
@@ -373,7 +373,7 @@ drawBG().then(() => {
 	const out = fs.createWriteStream(
 		path.join(
 			__dirname,
-			"../dab-activity/getting-started-activity/client/images/state.png"
+			"/web-app/public/images/state.png"
 		)
 	);
 	const b_out = fs.createWriteStream(

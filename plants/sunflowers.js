@@ -26,8 +26,8 @@ module.exports = {
 				sun_cost: 25,
 				sun_production: 5,
 				max_sun_production: 25,
-				unlock_timer: 999,
 				cooldown: 0,
+				hidden: true
 			});
 			Object.assign(this, data);
 		}

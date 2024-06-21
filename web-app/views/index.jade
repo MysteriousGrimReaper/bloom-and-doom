@@ -1,8 +1,26 @@
-extends layout
+doctype html
+html
+  head
+    style.
+      body, html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
 
-block content
-  h1= title
-  p Welcome to #{title}
-  p hi
-  img(src="images/state.png", alt="")
-  img(src="images/board.png", alt="")
+      .bg {
+        /* The image used */
+        background-image: url("images/state.png");
+
+        /* Full height */
+        height: 100%;
+
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        width: 100%;
+        position: relative;
+      }
+  body
+    .bg
