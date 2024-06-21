@@ -100,7 +100,8 @@ class MelonPult extends Peashooter {
 			name: `Melon-pult`,
 			sun_cost: 350,
 			damage: 3,
-			hidden: true,
+			cooldown: 5,
+			unlock_timer: 25
 		});
 		Object.assign(this, data);
 	}
@@ -262,8 +263,9 @@ module.exports = {
 			super({
 				name: `Cabbage-pult`,
 				sun_cost: 100,
-				hidden: true,
-				mega_cabbage_timer: 3
+				mega_cabbage_timer: 3,
+				cooldown: 5,
+				unlock_timer: 25
 			});
 			Object.assign(this, data);
 		}
@@ -284,8 +286,9 @@ module.exports = {
 			super({
 				name: `Kernel-pult`,
 				sun_cost: 100,
-				hidden: true,
-				butter_timer: 3
+				butter_timer: 3,
+				cooldown: 5,
+				unlock_timer: 25
 			});
 			Object.assign(this, data);
 		}

@@ -19,6 +19,47 @@ class Sunflower extends Plant {
 }
 module.exports = {
 	Sunflower,
+	TwinSunflower: class TwinSunflower extends Sunflower {
+		constructor(data) {
+			super({
+				name: `Twin Sunflower`,
+				sun_cost: 125,
+				sun_production: 50,
+				unlock_timer: 10,
+				cooldown: 3
+			})
+			Object.assign(this, data)
+		}
+	},
+	PrimalSunflower: class PrimalSunflower extends Sunflower {
+		constructor(data) {
+			super({
+				name: `Primal Sunflower`,
+				sun_cost: 125,
+				sun_production: 175,
+				unlock_timer: 20,
+				cooldown: 3,
+				sun_timer: 3
+			})
+			
+			Object.assign(this, data)
+		}
+		onEndTurn() {
+			this.sun_timer--
+			if (this.sun_timer <= 0) {
+				this.sun_timer = 3
+				return new Action({
+					sun_gain: this.sun_production,
+					from: `Primal Sunflower`,
+				});
+			}
+			else {
+				return new Action({
+					notes: `Awaiting sun from Primal Sunflower`
+				})
+			}
+		}
+	},
 	Sunshroom: class Sunshroom extends Sunflower {
 		constructor(data) {
 			super({
