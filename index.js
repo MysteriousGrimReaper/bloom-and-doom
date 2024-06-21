@@ -102,7 +102,7 @@ actions.push(
 		}),
 	]
 );
-const ff = 1;
+const ff = 0;
 actions.push(...Array(ff).fill(new Action({ end_turn: true })));
 const valid = actions.validate();
 if (valid) {
@@ -121,8 +121,6 @@ registerFont("assets/Archivo-SemiBold.ttf", { family: "Archivo" });
 registerFont("assets/HelveticaNeueMedium.otf", { family: "HelveticaNeue" });
 const canvas = createCanvas(1920, 1080);
 const ctx = canvas.getContext("2d");
-const board_canvas = createCanvas(3200, 3200);
-const bctx = board_canvas.getContext("2d");
 const {
 	sun,
 	player_list,
@@ -164,10 +162,6 @@ async function drawBG() {
 	// Draw bg under players
 	ctx.strokeStyle = "rgba(0,255,0,1)";
 	ctx.fillStyle = "rgba(0,255,0,0.2)";
-	bctx.strokeStyle = "rgba(255,255,255,1)";
-	bctx.fillStyle = "rgba(255,255,255,0.2)";
-	bctx.lineWidth = 4;
-	bctx.fillRect(0, 0, 3200, 3200);
 
 	ctx.fillRect(bb[0], bb[1], bb[2] * board_width, bb[3] * board_height);
 	ctx.beginPath();
@@ -185,39 +179,18 @@ async function drawBG() {
 	}
 
 	ctx.stroke();
-
-	bctx.beginPath();
-	i = 0;
-	while (i <= board_width) {
-		bctx.moveTo(i * 200, 0);
-		bctx.lineTo(i * 200, 3200);
-		i++;
-	}
-	i = 0;
-	while (i <= board_height) {
-		bctx.moveTo(0, i * 200);
-		bctx.lineTo(3200, i * 200);
-		i++;
-	}
-	bctx.stroke();
 	await [...plant_list, ...zombie_list, ...player_list].forEach(async (p) => {
+		const margin = 3
 		await ctx.drawImage(
 			await p.sprite(),
-			bb[0] + p.position.x * bb[2],
-			bb[1] + p.position.y * bb[3],
-			bb[2],
-			bb[3]
-		);
-		await bctx.drawImage(
-			await p.sprite(),
-			p.position.x * 200 + 5,
-			p.position.y * 200 + 5,
-			190,
-			190
+			bb[0] + p.position.x * bb[2] + margin,
+			bb[1] + p.position.y * bb[3] + margin,
+			bb[2] - margin * 2,
+			bb[3] - margin * 2
 		);
 		if (p.direction) {
-			bctx.fillStyle = `rgb(255, 255, 255)`;
-			bctx.beginPath();
+			ctx.fillStyle = `rgb(255, 255, 255)`;
+			ctx.beginPath();
 			const px_normal =
 				p.direction.x /
 				Math.sqrt(
@@ -234,28 +207,28 @@ async function drawBG() {
 			const left_angle = angle - Math.PI / 8;
 			const right_angle = angle + Math.PI / 8;
 			const triangle_x = [
-				px_normal * 110,
-				Math.cos(left_angle) * 90,
-				Math.cos(right_angle) * 90,
+				px_normal * 25,
+				Math.cos(left_angle) * 15,
+				Math.cos(right_angle) * 15,
 			];
 			const triangle_y = [
-				py_normal * 110,
-				Math.sin(left_angle) * 90,
-				Math.sin(right_angle) * 90,
+				py_normal * 25,
+				Math.sin(left_angle) * 15,
+				Math.sin(right_angle) * 15,
 			];
-			bctx.moveTo(
-				p.position.x * 200 + 100 + triangle_x[0],
-				p.position.y * 200 + 100 + triangle_y[0]
+			ctx.moveTo(
+				p.position.x * bb[2] + bb[0] + bb[2] / 2 + triangle_x[0],
+				p.position.y * bb[3] + bb[1] + bb[3] / 2 + triangle_y[0]
 			);
-			bctx.lineTo(
-				p.position.x * 200 + 100 + triangle_x[1],
-				p.position.y * 200 + 100 + triangle_y[1]
+			ctx.lineTo(
+				p.position.x * bb[2] + bb[0] + bb[2] / 2 + triangle_x[1],
+				p.position.y * bb[3] + bb[1] + bb[3] / 2 + triangle_y[1]
 			);
-			bctx.lineTo(
-				p.position.x * 200 + 100 + triangle_x[2],
-				p.position.y * 200 + 100 + triangle_y[2]
+			ctx.lineTo(
+				p.position.x * bb[2] + bb[0] + bb[2] / 2 + triangle_x[2],
+				p.position.y * bb[3] + bb[1] + bb[3] / 2 + triangle_y[2]
 			);
-			bctx.fill();
+			ctx.fill();
 		}
 		if (p.status) {
 			p.status.forEach(async (s) => {
@@ -265,13 +238,6 @@ async function drawBG() {
 				} catch {
 					s_image = await loadImage(`./assets/default_status.png`);
 				}
-				bctx.drawImage(
-					s_image,
-					p.position.x * 200 + 100,
-					p.position.y * 200,
-					100,
-					100
-				);
 				ctx.drawImage(
 					s_image,
 					bb[0] + p.position.x * bb[2] + bb[2] / 2,
@@ -361,13 +327,6 @@ async function drawBG() {
 		ctx.textAlign = "right";
 		ctx.fillText(i, 1040, 143 + i * 50);
 	}
-
-	/**
-	 * BOARD EXCLUSIVE
-	 */
-	// direction arrows
-	bctx.fillStyle = "rgb(255,255,255)";
-	await entity_images.forEach(async (p) => {});
 }
 drawBG().then(() => {
 	const out = fs.createWriteStream(
@@ -376,13 +335,7 @@ drawBG().then(() => {
 			"/web-app/public/images/state.png"
 		)
 	);
-	const b_out = fs.createWriteStream(
-		__dirname + "/web-app/public/images/board.png"
-	);
 	const stream = canvas.createPNGStream();
-	const b_stream = board_canvas.createPNGStream();
 	stream.pipe(out);
-	b_stream.pipe(b_out);
 	out.on("finish", () => console.log("The PNG file was created."));
-	b_out.on("finish", () => console.log("The PNG file was created."));
 });

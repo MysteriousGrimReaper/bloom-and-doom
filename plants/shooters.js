@@ -172,7 +172,8 @@ module.exports = {
 				name: `Snow Pea`,
 				sun_cost: 175,
 				apply_effects: [{name: `frozen`, time: 1}],
-				hidden: true
+				cooldown: 4,
+				unlock_timer: 10
 			});
 			Object.assign(this, data);
 		}

@@ -10,7 +10,6 @@ plant_categories.forEach((c) => {
 			delete plant[p]
 		}
 	})
-	console.log(plant)
 	Object.assign(
 		plants,
 		plant
