@@ -2,9 +2,8 @@ const Plant = require("../structures/plant.js");
 const Action = require("../structures/action.js");
 class IcebergLettuce extends Plant {
 	constructor(data) {
-		super(data);
-		this.name = `Iceberg Lettuce`;
-		this.sun_cost = 0;
+		super({ name: `Iceberg Lettuce`, sun_cost: 0, cooldown: 5 });
+		Object.assign(this, data);
 	}
 	onDeath(action_list) {
 		const { zombie_list } = action_list;

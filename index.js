@@ -5,84 +5,136 @@ const Player = require("./structures/player.js");
 const PlayerList = require("./structures/player_list.js");
 const Plant = require("./structures/plant.js");
 const fs = require("node:fs");
-const {
-	Sunflower,
-	Peashooter,
-	WallNut,
-	Sunshroom,
-	IcebergLettuce,
-	Starfruit,
-} = require("./almanac");
+const path = require("path");
+
+const almanac = require("./almanac.js");
+const zalmanac = require("./zalmanac.js");
 const Zombie = require("./structures/zombie.js");
 const actions = new ActionList({ board_width: 16, board_height: 16 });
 const players = new PlayerList();
 players.push(
-	...[
-		new Player({ name: `Lazarus`, position: new Movement(12, 6) }),
-		new Player({ name: `Tatters`, position: new Movement(5, 10) }),
-		new Player({ name: `Cube492`, position: new Movement(11, 9) }),
-		new Player({ name: `The CAACN`, position: new Movement(9, 4) }),
-		new Player({ name: `arnim`, position: new Movement(9, 12) }),
-		new Player({ name: `AMS`, position: new Movement(7, 8) }),
-	]
+	...[new Player({ name: `woooowoooo`, position: new Movement(9, 9, true) })]
 );
 actions.setPlayers(players);
 actions.push(
 	...[
-		new Action({
-			spawn_zombie: new Zombie({ position: new Movement(0, 0) }),
-		}),
 		new Action({ begin_turn: true }),
-
+		new Action({ new_plant: `Sunflower`, position: new Movement(8, 8) }),
+		new Action({ new_plant: `PotatoMine`, position: new Movement(10, 10) }),
 		new Action({
-			sun_gain: 100,
+			new_plant: `IcebergLettuce`,
+			position: new Movement(8, 10),
 		}),
 		new Action({
-			player: "Lazarus",
-			plant: new Sunshroom({ position: new Movement(11, 6, false) }),
+			end_turn: true,
 		}),
 		new Action({
-			player: "arno",
-			plant: new Starfruit({
-				position: new Movement(1, 13, false),
-			}),
+			player: `woooowoooo`,
+			movement: new Movement(-1, -1),
 		}),
 		new Action({
-			player: "arno",
-			plant: new IcebergLettuce({
-				position: new Movement(1, 1, false),
-			}),
+			new_plant: `Peashooter`,
+			position: new Movement(7, 9),
+			direction: new Movement(0, 1),
 		}),
 		new Action({
-			player: "AMS",
-			plant: new WallNut({ position: new Movement(3, 3, false) }),
+			new_plant: `Sunflower`,
+			position: new Movement(7, 7),
 		}),
 		new Action({ end_turn: true }),
+		new Action({
+			new_plant: `Sunflower`,
+			position: new Movement(7, 8),
+		}),
+		new Action({
+			new_plant: `Sunflower`,
+			position: new Movement(8, 7),
+		}),
+		new Action({
+			new_plant: `Sunflower`,
+			position: new Movement(9, 8),
+		}),
+		new Action({
+			player: `woooowoooo`,
+			movement: new Movement(7, 7, false),
+		}),
 		new Action({ end_turn: true }),
-		new Action({ end_turn: true }),
+		// (7, 8), (7, 9), (8, 7), and (9, 7)
+		new Action({
+			new_plant: `Sunflower`,
+			position: new Movement(6, 7),
+		}),
+		new Action({
+			new_plant: `Sunflower`,
+			position: new Movement(6, 8),
+		}),
+		new Action({
+			new_plant: `Sunflower`,
+			position: new Movement(7, 6),
+		}),
+		new Action({
+			new_plant: `Sunflower`,
+			position: new Movement(8, 6),
+		}),
+		new Action({
+			end_turn: true,
+		}),
+		new Action({
+			new_zombie: "Basic",
+			position: new Movement(12, 0),
+		}),
+		new Action({
+			new_zombie: "Basic",
+			position: new Movement(15, 3),
+		}),
+		new Action({
+			new_zombie: "Basic",
+			position: new Movement(9, 15),
+		}),
+		new Action({
+			new_zombie: "Basic",
+			position: new Movement(0, 10),
+		}),
+		new Action({
+			new_plant: "LaserBean",
+			position: new Movement(6, 6),
+			direction: new Movement(3, -1),
+		}),
 	]
 );
+const ff = 6;
+actions.push(...Array(ff).fill(new Action({ end_turn: true })));
 const valid = actions.validate();
 if (valid) {
-	console.log("\x1b[32m", "All set! Here's the game log:");
-	console.log(actions);
+	console.log("\x1b[32m", "All set! Find the game log in game.json.");
 	fs.writeFile(`game.json`, JSON.stringify(actions.toJSON()), (err) => {
 		if (err) throw err;
 		console.log(`The file has been saved!`);
 	});
 }
+
 console.log(`Done`);
 
 // draw image
-const { createCanvas, loadImage } = require("canvas");
+const { createCanvas, loadImage, registerFont } = require("canvas");
+registerFont("assets/Archivo-SemiBold.ttf", { family: "Archivo" });
+registerFont("assets/HelveticaNeueMedium.otf", { family: "HelveticaNeue" });
 const canvas = createCanvas(1920, 1080);
 const ctx = canvas.getContext("2d");
 const board_canvas = createCanvas(3200, 3200);
 const bctx = board_canvas.getContext("2d");
-const { sun, player_list, zombie_list, plant_list, board_height, board_width } =
-	actions;
+const {
+	sun,
+	player_list,
+	zombie_list,
+	plant_list,
+	board_height,
+	board_width,
+	seed_slot_list,
+} = actions;
 async function drawBG() {
 	const entity_images = [];
+	const lock_image = await loadImage(`./assets/lock.png`);
 	for (let i of [...player_list, ...plant_list, ...zombie_list]) {
 		let image;
 		try {
@@ -106,8 +158,8 @@ async function drawBG() {
 
 	// Write sun value
 	ctx.fillStyle = `rgb(255 255 0)`;
-	ctx.font = "45px Impact";
-	ctx.fillText(`Sun: ${sun}`, 1300, 100);
+	ctx.font = "45px Archivo";
+	ctx.fillText(`☀️ ${sun}`, 1300, 100);
 
 	// Draw bg under players
 	ctx.strokeStyle = "rgba(0,255,0,1)";
@@ -148,27 +200,23 @@ async function drawBG() {
 		i++;
 	}
 	bctx.stroke();
-	await entity_images.forEach(async (p) => {
+	await [...plant_list, ...zombie_list, ...player_list].forEach(async (p) => {
 		await ctx.drawImage(
-			p.image,
+			await p.sprite(),
 			bb[0] + p.position.x * bb[2],
 			bb[1] + p.position.y * bb[3],
 			bb[2],
 			bb[3]
 		);
 		await bctx.drawImage(
-			p.image,
+			await p.sprite(),
 			p.position.x * 200 + 5,
 			p.position.y * 200 + 5,
 			190,
 			190
 		);
-	});
-
-	// direction arrows
-	bctx.fillStyle = "rgb(255,255,255)";
-	await entity_images.forEach(async (p) => {
 		if (p.direction) {
+			bctx.fillStyle = `rgb(255, 255, 255)`;
 			bctx.beginPath();
 			const px_normal =
 				p.direction.x /
@@ -210,7 +258,6 @@ async function drawBG() {
 			bctx.fill();
 		}
 		if (p.status) {
-			console.log(p);
 			p.status.forEach(async (s) => {
 				let s_image;
 				try {
@@ -225,13 +272,113 @@ async function drawBG() {
 					100,
 					100
 				);
+				ctx.drawImage(
+					s_image,
+					bb[0] + p.position.x * bb[2] + bb[2] / 2,
+					bb[1] + p.position.y * bb[3],
+					bb[2] / 2,
+					bb[3] / 2
+				);
 			});
 		}
 	});
+	/**
+	 * STATE EXCLUSIVE
+	 */
+	ctx.fillStyle = `rgb(255, 255, 255)`;
+	const g_offset = 250;
+	const gardener_label_offset = 80;
+	ctx.fillText(`Gardeners`, 373 + g_offset + gardener_label_offset, 105);
+	ctx.fillText(`Seeds`, g_offset - 100, 105);
+	ctx.font = "30px Archivo";
+	for (let p in player_list) {
+		ctx.fillText(
+			player_list[p].name,
+			373 + g_offset + gardener_label_offset,
+			155 + 40 * p
+		);
+		ctx.drawImage(
+			await player_list[p].sprite(),
+			333 + g_offset + gardener_label_offset,
+			130 + 40 * p,
+			30,
+			30
+		);
+	}
+	const plant_keys = Object.keys(seed_slot_list).sort();
+	for (let p in plant_keys) {
+		const temp_plant = seed_slot_list[plant_keys[p]];
+		const is_recharged = !(
+			temp_plant.unlock_timer > 0 || temp_plant.cooldown_timer > 0
+		);
+		if (!is_recharged) {
+			ctx.fillStyle = "rgb(122, 122, 122)";
+			ctx.fillText(
+				`🔄 ${Math.max(
+					temp_plant.unlock_timer,
+					temp_plant.cooldown_timer
+				)}`,
+				g_offset + 280,
+				155 + 40 * p
+			);
+			if (temp_plant.unlock_timer > 0) {
+				ctx.drawImage(lock_image, g_offset - 150, 130 + 40 * p, 30, 30);
+			} else {
+				ctx.drawImage(
+					await temp_plant.sprite(),
+					g_offset - 150,
+					130 + 40 * p,
+					30,
+					30
+				);
+			}
+		} else {
+			ctx.drawImage(
+				await temp_plant.sprite(),
+				g_offset - 150,
+				130 + 40 * p,
+				30,
+				30
+			);
+		}
+		ctx.fillText(temp_plant.name, g_offset - 100, 155 + 40 * p);
+		const sun_value = sun >= temp_plant.sun_cost;
+		ctx.fillStyle =
+			sun_value && is_recharged
+				? `rgb(255, 255, 100)`
+				: sun_value
+				? `rgb(100, 100, 0)`
+				: is_recharged
+				? `rgb(255, 100, 100)`
+				: `rgb(100, 100, 100)`;
+		ctx.fillText(`☀️ ${temp_plant.sun_cost}`, g_offset + 150, 155 + 40 * p);
+		ctx.fillStyle = "rgb(255, 255, 255)";
+	}
+	ctx.fillStyle = "rgba(100,255,100,0.5)";
+	for (let i = 1; i <= 16; i++) {
+		ctx.textAlign = "center";
+		ctx.fillText(i, 1025 + i * 50, 153);
+		ctx.textAlign = "right";
+		ctx.fillText(i, 1040, 143 + i * 50);
+	}
+
+	/**
+	 * BOARD EXCLUSIVE
+	 */
+	// direction arrows
+	bctx.fillStyle = "rgb(255,255,255)";
+	await entity_images.forEach(async (p) => {});
 }
 drawBG().then(() => {
-	const out = fs.createWriteStream(__dirname + "/assets/state.png");
-	const b_out = fs.createWriteStream(__dirname + "/assets/board.png");
+	const out = fs.createWriteStream(
+		path.join(
+			__dirname,
+			"../dab-activity/getting-started-activity/client/images/state.png"
+		)
+	);
+	const b_out = fs.createWriteStream(
+		__dirname + "/web-app/public/images/board.png"
+	);
 	const stream = canvas.createPNGStream();
 	const b_stream = board_canvas.createPNGStream();
 	stream.pipe(out);

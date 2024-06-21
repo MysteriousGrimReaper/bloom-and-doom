@@ -1,7 +1,13 @@
 const Plant = require("../structures/plant.js");
 class WallNut extends Plant {
 	constructor(data) {
-		super({ name: `Wall-Nut`, sun_cost: 50, health: 10 });
+		super({
+			name: `Wall-Nut`,
+			sun_cost: 50,
+			health: 10,
+			unlock_timer: 2,
+			cooldown: 5,
+		});
 		Object.assign(this, data);
 	}
 }
@@ -9,7 +15,12 @@ module.exports = {
 	WallNut,
 	Infinut: class Infinut extends WallNut {
 		constructor(data) {
-			super({ name: `Infinut`, sun_cost: 75, health: 7 });
+			super({
+				name: `Infi-nut`,
+				sun_cost: 75,
+				health: 7,
+				unlock_timer: 15,
+			});
 			Object.assign(this, data);
 		}
 		onEndTurn() {

@@ -20,6 +20,7 @@
   "dependencies": {
     "canvas": "^2.11.2",
     "discord.js": "^14.15.3",
+    "express": "^4.19.2",
     "keyv": "^4.5.4"
   },
   "devDependencies": {

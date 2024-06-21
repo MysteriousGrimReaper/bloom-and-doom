@@ -1,4 +1,14 @@
 const Action = require("./action.js");
+const z = require("../zalmanac.js");
+const a = require("../almanac.js");
+const almanac = Object.entries(a).reduce((acc, cv) => {
+	acc[cv[0]] = new cv[1]();
+	return acc;
+}, {});
+const zalmanac = Object.entries(z).reduce((acc, cv) => {
+	acc[cv[0]] = new cv[1]();
+	return acc;
+}, {});
 module.exports = class ActionList extends Array {
 	constructor(data) {
 		super();
@@ -7,6 +17,8 @@ module.exports = class ActionList extends Array {
 		this.zombie_list = [];
 		this.plant_list = [];
 		this.corpse_list = [];
+		this.seed_slot_list = almanac;
+		this.zombie_almanac_list = zalmanac;
 		this.board_width = 16;
 		this.board_height = 16;
 		this.clock = 0;
@@ -38,16 +50,44 @@ module.exports = class ActionList extends Array {
 			const target_player = this[i].player
 				? this.player_list.find((p) => p.name == this[i].player)
 				: false;
-			if (this[i].plant) {
-				if (this[i].plant.position.relative) {
-					this[i].plant.move(target_player.position);
+			if (this[i].new_plant) {
+				try {
+					this[i].plant = new a[this[i].new_plant]();
+				} catch (error) {
+					console.log(error);
+					console.log(Object.keys(almanac));
+					throw Error(
+						`${this[i].new_plant} is not a plant. See above for list of accepted plants.`
+					);
 				}
-
+				if (
+					this.seed_slot_list[this[i].new_plant].unlock_timer > 0 ||
+					this.seed_slot_list[this[i].new_plant].cooldown_timer > 0
+				) {
+					throw Error(`${this[i].plant.name} is on cooldown!`);
+				}
+				this.seed_slot_list[this[i].new_plant].cooldown_timer =
+					this.seed_slot_list[this[i].new_plant].cooldown;
+				this[i].plant.position = this[i].position;
+				if (this[i].direction) {
+					this[i].plant.direction = this[i].direction;
+				}
 				this.plant_list.push(this[i].plant);
 				this.splice(i + 1, 0, this[i].plant.onPlant());
 			}
-			if (this[i].spawn_zombie) {
-				this.zombie_list.push(this[i].spawn_zombie);
+			if (this[i].new_zombie) {
+				try {
+					this[i].zombie = new z[this[i].new_zombie]();
+				} catch (error) {
+					console.log(error);
+					console.log(Object.keys(zalmanac));
+					throw Error(
+						`${this[i].new_zombie} is not a zombie. See above for list of accepted zombies.`
+					);
+				}
+				this[i].zombie.position = this[i].position;
+				this.zombie_list.push(this[i].zombie);
+				this.splice(i + 1, 0, this[i].zombie.onEnter());
 			}
 			if (this[i].new_player) {
 				this.player_list.push(this[i].new_player);
@@ -55,14 +95,13 @@ module.exports = class ActionList extends Array {
 			if (this[i].end_turn) {
 				let actions_added = 0;
 				for (let p of this.plant_list) {
-					p.unlock_timer--;
-					p.cooldown_timer--;
 					const plant_action = p.onEndTurn(this);
 					if (plant_action) {
 						actions_added++;
 						this.splice(i + actions_added, 0, plant_action);
 					}
 				}
+
 				for (let z of this.zombie_list) {
 					const zombie_action = z.onEndTurn(
 						this.player_list,
@@ -95,6 +134,10 @@ module.exports = class ActionList extends Array {
 					0,
 					new Action({ sun_gain: this.base_sun_gain })
 				);
+				for (let p in this.seed_slot_list) {
+					this.seed_slot_list[p].unlock_timer--;
+					this.seed_slot_list[p].cooldown_timer--;
+				}
 			}
 			sun += (this[i].sun_gain ?? 0) - (this[i].sun_cost ?? 0);
 			if (sun < 0) {

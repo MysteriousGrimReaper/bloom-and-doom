@@ -1,5 +1,7 @@
 const Action = require("./action.js");
 const Movement = require("./movement.js");
+const { loadImage } = require("canvas");
+const path = require("path");
 module.exports = class Zombie {
 	constructor(data) {
 		this.health = 3;
@@ -11,6 +13,11 @@ module.exports = class Zombie {
 		this.status = [];
 		Object.assign(this, data);
 		this.max_health = this.health;
+	}
+	onEnter() {
+		return new Action({
+			notes: `Zombie spawned at ${this.position.x}, ${this.position.y}`,
+		});
 	}
 	evalStatuses() {
 		const frozen = this.status.find((s) => s.name == `frozen`);
@@ -32,6 +39,11 @@ module.exports = class Zombie {
 		this.position.x = x;
 		this.position.y = y;
 		return this;
+	}
+	async sprite() {
+		return await loadImage(
+			path.join(__dirname, `../assets/${this.name}.png`)
+		);
 	}
 	move(movement) {
 		const { x, y, relative } = movement;
@@ -55,13 +67,17 @@ module.exports = class Zombie {
 	closest(player_list, plant_list) {
 		const cost_list = player_list.map(
 			(p) =>
-				Math.abs(p.position.x - this.position.x) +
-				Math.abs(p.position.y - this.position.y)
+				(p.position.x - this.position.x) *
+					(p.position.x - this.position.x) +
+				(p.position.y - this.position.y) *
+					(p.position.y - this.position.y)
 		);
 		const plant_cost_list = plant_list.map(
 			(p) =>
-				Math.abs(p.position.x - this.position.x) +
-				Math.abs(p.position.y - this.position.y) +
+				(p.position.x - this.position.x) *
+					(p.position.x - this.position.x) +
+				(p.position.y - this.position.y) *
+					(p.position.y - this.position.y) +
 				0.1
 		);
 		const min_player_cost = Math.min(...cost_list);
@@ -77,14 +93,20 @@ module.exports = class Zombie {
 	}
 	orthoPathfind(player_list, plant_list) {
 		const target = this.closest(player_list, plant_list);
+		console.log(`Target position:`);
+		console.log(target.position);
 		const h_direction = target.position.x - this.position.x;
 		const v_direction = target.position.y - this.position.y;
-		const go_h_axis = Math.abs(h_direction) >= v_direction;
-		if (go_h_axis) {
-			return new Movement(Math.sign(h_direction), 0);
-		} else {
-			return new Movement(0, Math.sign(v_direction));
-		}
+		const go_h_axis = Math.abs(h_direction) >= Math.abs(v_direction);
+
+		const movement_direction = new Movement(
+			go_h_axis ? Math.sign(h_direction) : 0,
+			!go_h_axis ? Math.sign(v_direction) : 0
+		);
+		console.log(`Current position:`);
+		console.log(this.position);
+		console.log(movement_direction);
+		return movement_direction;
 	}
 	diagPathfind(player_list, plant_list) {
 		const target = this.closest(player_list, plant_list);

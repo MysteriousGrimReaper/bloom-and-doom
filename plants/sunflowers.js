@@ -2,7 +2,12 @@ const Plant = require("../structures/plant.js");
 const Action = require("../structures/action.js");
 class Sunflower extends Plant {
 	constructor(data) {
-		super({ name: `Sunflower`, sun_cost: 50, sun_production: 25 });
+		super({
+			name: `Sunflower`,
+			sun_cost: 50,
+			sun_production: 25,
+			cooldown: 0,
+		});
 		Object.assign(this, data);
 	}
 	onEndTurn() {
@@ -21,6 +26,8 @@ module.exports = {
 				sun_cost: 25,
 				sun_production: 5,
 				max_sun_production: 25,
+				unlock_timer: 999,
+				cooldown: 0,
 			});
 			Object.assign(this, data);
 		}

@@ -1,3 +1,5 @@
+const { loadImage } = require("canvas");
+const path = require("path");
 const Action = require("./action.js");
 const Movement = require("./movement.js");
 module.exports = class Plant {
@@ -14,6 +16,11 @@ module.exports = class Plant {
 		this.cooldown_timer = 0;
 		Object.assign(this, data);
 		this.max_health = this.health;
+	}
+	async sprite() {
+		return await loadImage(
+			path.join(__dirname, `../assets/${this.name}.png`)
+		);
 	}
 	onPlant() {
 		this.cooldown_timer = this.cooldown;

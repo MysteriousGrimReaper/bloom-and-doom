@@ -2,10 +2,14 @@ const Plant = require("../structures/plant.js");
 const Action = require("../structures/action.js");
 class Aloe extends Plant {
 	constructor(data) {
-		super(data);
-		this.name = `Aloe`;
-		this.sun_cost = 100;
-		this.health = 1;
+		super({
+			name: `Aloe`,
+			sun_cost: 100,
+			health: 1,
+			unlock_timer: 5,
+			cooldown: 2,
+		});
+		Object.assign(this, data);
 	}
 	onEndTurn(action_list) {
 		const { plant_list } = action_list;
@@ -29,5 +33,5 @@ class Aloe extends Plant {
 	}
 }
 module.exports = {
-	IcebergLettuce,
+	Aloe,
 };
