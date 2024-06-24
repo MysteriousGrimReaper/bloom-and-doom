@@ -108,14 +108,6 @@ module.exports = class ActionList extends Array {
 						this.player_list,
 						this.plant_list
 					);
-					if (z.dead) {
-						this.corpse_list.push(
-							this.zombie_list.splice(
-								this.zombie_list.indexOf(z),
-								1
-							)
-						);
-					}
 					if (zombie_action) {
 						actions_added++;
 						this.splice(i + actions_added, 0, zombie_action);

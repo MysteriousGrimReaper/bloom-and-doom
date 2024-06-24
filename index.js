@@ -1,3 +1,6 @@
+const game_index = 0;
+const ff = 3;
+
 const Action = require("./structures/action.js");
 const ActionList = require("./structures/action_list.js");
 const Movement = require("./structures/movement.js");
@@ -101,6 +104,11 @@ actions.push(
 			position: new Movement(6, 6),
 			direction: new Movement(3, -1),
 		}),
+		new Action({
+			new_plant: "Peashooter",
+			position: new Movement(9, 9),
+			direction: new Movement(0, 1)
+		})
 	]
 );
 
@@ -141,12 +149,12 @@ actions_tdq.push(
 		}),
 	]
 );
-const ff = 0;
+
 actions.push(...Array(ff).fill(new Action({ end_turn: true })));
 actions_tdq.push(...Array(ff).fill(new Action({ end_turn: true })));
 games.push(actions);
 games.push(actions_tdq);
-const game_index = 1;
+
 const valid = games[game_index].validate();
 if (valid) {
 	console.log("\x1b[32m", "All set! Find the game log in game.json.");
@@ -302,6 +310,19 @@ async function drawBG() {
 				);
 			});
 		}
+		if (p.health < p.max_health) {
+			const proportion = p.health / p.max_health
+			ctx.fillStyle = `rgb(${(proportion) < 0.66 ? `200`:  `0`}, ${(proportion) > 0.33 ? `200` :  `0`}, 20)`
+			ctx.beginPath()
+			
+			ctx.rect(
+				bb[0] + p.position.x * bb[2],
+				bb[1] + p.position.y * bb[3] - 2,
+				bb[2] * proportion,
+				4
+			)
+			ctx.fill()
+		}
 	});
 	/**
 	 * STATE EXCLUSIVE
@@ -395,12 +416,12 @@ async function drawBG() {
 				),
 				bb[0] +
 					(render?.start_x ??
-						render.position.x - (render?.size?.x - 1) / 2) *
+						render.position.x - ((render?.size?.x ?? 1) - 1) / 2) *
 						bb[2] +
 					margin,
 				bb[1] +
 					(render?.start_y ??
-						render.position.y - (render?.size?.y - 1) / 2) *
+						render.position.y - ((render?.size?.y ?? 1) - 1) / 2) *
 						bb[3] +
 					margin,
 				bb[2] * (render?.size?.x ?? 1) - margin * 2,

@@ -7,7 +7,6 @@ module.exports = class Zombie {
 		this.health = 3;
 
 		this.position = new Movement(0, 0);
-		this.dead = false;
 		this.bite = 1;
 		this.name = `Zombie`;
 		this.status = [];
@@ -119,7 +118,7 @@ module.exports = class Zombie {
 		return new Movement(Math.sign(h_direction), Math.sign(v_direction));
 	}
 	onDeath() {
-		this.dead = true;
+		console.log(`zombie died`)
 		return new Action({
 			render: { position: this.position, effect: `dead.png` },
 		});
