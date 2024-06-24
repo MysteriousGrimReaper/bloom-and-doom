@@ -10,6 +10,7 @@ const path = require("path");
 const almanac = require("./almanac.js");
 const zalmanac = require("./zalmanac.js");
 const Zombie = require("./structures/zombie.js");
+const games = [];
 const actions = new ActionList({ board_width: 16, board_height: 16 });
 const players = new PlayerList();
 players.push(
@@ -102,15 +103,61 @@ actions.push(
 		}),
 	]
 );
+
+const actions_tdq = new ActionList({ board_width: 16, board_height: 16 });
+const players_tdq = new PlayerList();
+players_tdq.push(
+	...[
+		new Player({ name: `arno`, position: new Movement(0, 0) }),
+		new Player({ name: `Bradicus`, position: new Movement(1, 0) }),
+		new Player({ name: `Captain Totalitea`, position: new Movement(2, 0) }),
+		new Player({ name: `Chilly Billy`, position: new Movement(3, 0) }),
+		new Player({ name: `Cube492`, position: new Movement(4, 0) }),
+		new Player({ name: `Lazarus Alarie`, position: new Movement(5, 0) }),
+		new Player({ name: `Tatters`, position: new Movement(6, 0) }),
+		new Player({ name: `The CAACN`, position: new Movement(7, 0) }),
+		new Player({ name: `CT`, position: new Movement(8, 0) }),
+		new Player({ name: `AMS`, position: new Movement(9, 0) }),
+		new Player({ name: `Lillith Lazuli`, position: new Movement(10, 0) }),
+		new Player({ name: `Azalea`, position: new Movement(11, 0) }),
+		new Player({ name: `Snow SMA`, position: new Movement(12, 0) }),
+		new Player({ name: `Firework Dragon`, position: new Movement(13, 0) }),
+	]
+);
+actions_tdq.setPlayers(players_tdq);
+actions_tdq.push(
+	...[
+		new Action({ begin_turn: true }),
+		new Action({
+			new_plant: `Peashooter`,
+			position: new Movement(8, 8),
+			direction: new Movement(0, 1),
+		}),
+		new Action({ new_zombie: `Basic`, position: new Movement(8, 15) }),
+		...Array(20).fill(new Action({ end_turn: true })),
+		new Action({
+			new_plant: `Jalapeno`,
+			position: new Movement(4, 4),
+		}),
+	]
+);
 const ff = 0;
 actions.push(...Array(ff).fill(new Action({ end_turn: true })));
-const valid = actions.validate();
+actions_tdq.push(...Array(ff).fill(new Action({ end_turn: true })));
+games.push(actions);
+games.push(actions_tdq);
+const game_index = 1;
+const valid = games[game_index].validate();
 if (valid) {
 	console.log("\x1b[32m", "All set! Find the game log in game.json.");
-	fs.writeFile(`game.json`, JSON.stringify(actions.toJSON()), (err) => {
-		if (err) throw err;
-		console.log(`The file has been saved!`);
-	});
+	fs.writeFile(
+		`game.json`,
+		JSON.stringify(games[game_index].toJSON()),
+		(err) => {
+			if (err) throw err;
+			console.log(`The file has been saved!`);
+		}
+	);
 }
 
 console.log(`Done`);
@@ -129,7 +176,15 @@ const {
 	board_height,
 	board_width,
 	seed_slot_list,
-} = actions;
+	show_projectiles,
+} = games[game_index];
+let last_turn_index = games[game_index].length;
+while (!games[game_index][last_turn_index]?.end_turn && last_turn_index >= 0) {
+	last_turn_index--;
+}
+const render_images = games[game_index]
+	.slice(last_turn_index)
+	.filter((action) => action.render);
 async function drawBG() {
 	const entity_images = [];
 	const lock_image = await loadImage(`./assets/lock.png`);
@@ -179,8 +234,8 @@ async function drawBG() {
 	}
 
 	ctx.stroke();
+	const margin = 3;
 	await [...plant_list, ...zombie_list, ...player_list].forEach(async (p) => {
-		const margin = 3
 		await ctx.drawImage(
 			await p.sprite(),
 			bb[0] + p.position.x * bb[2] + margin,
@@ -283,7 +338,11 @@ async function drawBG() {
 				`🔄 ${Math.max(
 					temp_plant.unlock_timer,
 					temp_plant.cooldown_timer
-				)}${temp_plant.unlock_timer <= 0 ? `/${temp_plant.cooldown}` : ``}`,
+				)}${
+					temp_plant.unlock_timer <= 0
+						? `/${temp_plant.cooldown}`
+						: ``
+				}`,
 				g_offset + 280,
 				155 + 40 * p
 			);
@@ -327,13 +386,68 @@ async function drawBG() {
 		ctx.textAlign = "right";
 		ctx.fillText(i, 1040, 143 + i * 50);
 	}
+	render_images.forEach(async (action) => {
+		const { render } = action;
+		if (render.effect) {
+			await ctx.drawImage(
+				await loadImage(
+					path.join(__dirname, `/assets/effects/${render.effect}`)
+				),
+				bb[0] +
+					(render?.start_x ??
+						render.position.x - (render?.size?.x - 1) / 2) *
+						bb[2] +
+					margin,
+				bb[1] +
+					(render?.start_y ??
+						render.position.y - (render?.size?.y - 1) / 2) *
+						bb[3] +
+					margin,
+				bb[2] * (render?.size?.x ?? 1) - margin * 2,
+				bb[3] * (render?.size?.y ?? 1) - margin * 2
+			);
+		} else if (render.projectile) {
+			const projectile_image = await loadImage(
+				path.join(__dirname, `/assets/projectiles/${render.projectile}`)
+			);
+			let draw_x = render.start_pos.x;
+			let draw_y = render.start_pos.y;
+			const repetitions = isNaN(
+				Math.abs((draw_x - render.end_pos.x) / render.direction.x)
+			)
+				? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
+				: Math.abs((draw_x - render.end_pos.x) / render.direction.x);
+			let i = 0;
+			while (i < repetitions) {
+				console.log(
+					`drawing ${render.projectile} at ${draw_x}, ${draw_y}`
+				);
+				ctx.globalAlpha = i / repetitions;
+				await ctx.drawImage(
+					projectile_image,
+					bb[0] +
+						(render?.start_x ??
+							draw_x - ((render?.size?.x ?? 1) - 1) / 2) *
+							bb[2] +
+						margin,
+					bb[1] +
+						(render?.start_y ??
+							draw_y - ((render?.size?.y ?? 1) - 1) / 2) *
+							bb[3] +
+						margin,
+					bb[2] * (render?.size?.x ?? 1) - margin * 2,
+					bb[3] * (render?.size?.y ?? 1) - margin * 2
+				);
+				draw_x += render.direction.x;
+				draw_y += render.direction.y;
+				i++;
+			}
+		}
+	});
 }
 drawBG().then(() => {
 	const out = fs.createWriteStream(
-		path.join(
-			__dirname,
-			"/web-app/public/images/state.png"
-		)
+		path.join(__dirname, "/web-app/public/images/state.png")
 	);
 	const stream = canvas.createPNGStream();
 	stream.pipe(out);

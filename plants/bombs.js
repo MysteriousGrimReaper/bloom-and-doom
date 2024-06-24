@@ -3,7 +3,6 @@ const Action = require("../structures/action.js");
 const { loadImage } = require("canvas");
 const path = require("path");
 
-
 module.exports = {
 	PotatoMine: class PotatoMine extends Plant {
 		constructor(data) {
@@ -37,14 +36,18 @@ module.exports = {
 		onDeath(action_list) {
 			if (this.recharge_timer <= 0) {
 				const { zombie_list } = action_list;
-				zombie_list.forEach(z => {
-					const cost = Math.max(Math.abs(z.position.x - this.position.x),
-					Math.abs(z.position.y - this.position.y))
+				zombie_list.forEach((z) => {
+					const cost = Math.max(
+						Math.abs(z.position.x - this.position.x),
+						Math.abs(z.position.y - this.position.y)
+					);
 					if (cost <= 0) {
-						z.damage(25)
+						z.damage(25);
 					}
 				});
-				return new Action({ notes: `Potato Mine exploded zombie` });
+				return new Action({
+					render: { position: this.position, effect: `spudow.png` },
+				});
 			}
 		}
 	},
@@ -60,16 +63,23 @@ module.exports = {
 			Object.assign(this, data);
 		}
 		onDeath(action_list) {
-				const { zombie_list } = action_list;
-				zombie_list.forEach(z => {
-					const cost = Math.max(Math.abs(z.position.x - this.position.x),
-					Math.abs(z.position.y - this.position.y))
-					if (cost <= 1) {
-						z.damage(25)
-					}
-				});
-				return new Action({ notes: `Cherry Bomb exploded zombie` });
-			
+			const { zombie_list } = action_list;
+			zombie_list.forEach((z) => {
+				const cost = Math.max(
+					Math.abs(z.position.x - this.position.x),
+					Math.abs(z.position.y - this.position.y)
+				);
+				if (cost <= 1) {
+					z.damage(25);
+				}
+			});
+			return new Action({
+				render: {
+					position: this.position,
+					effect: `spudow.png`,
+					size: { x: 3, y: 3 },
+				},
+			});
 		}
 	},
 	Jalapeno: class Jalapeno extends Plant {
@@ -84,15 +94,21 @@ module.exports = {
 			Object.assign(this, data);
 		}
 		onDeath(action_list) {
-				const { zombie_list } = action_list;
-				zombie_list.forEach(z => {
-					const cost = z.position.y == this.position.y
-					if (cost) {
-						z.damage(25, `fire`)
-					}
-				});
-				return new Action({ notes: `Jalapeno burned zombie` });
-			
+			const { zombie_list } = action_list;
+			zombie_list.forEach((z) => {
+				const cost = z.position.y == this.position.y;
+				if (cost) {
+					z.damage(25, `fire`);
+				}
+			});
+			return new Action({
+				render: {
+					position: this.position,
+					effect: `jaleburn.png`,
+					size: { x: 16, y: 1 },
+					start_x: 0,
+				},
+			});
 		}
 	},
 	ChillyPepper: class ChillyPepper extends Plant {
@@ -107,16 +123,22 @@ module.exports = {
 			Object.assign(this, data);
 		}
 		onDeath(action_list) {
-				const { zombie_list } = action_list;
-				zombie_list.forEach(z => {
-					const cost = z.position.y == this.position.y
-					if (cost) {
-						z.damage(10)
-						z.addStatus({name: `frozen`, time: 4})
-					}
-				});
-				return new Action({ notes: `Chilly Pepper cooled zombie` });
-			
+			const { zombie_list } = action_list;
+			zombie_list.forEach((z) => {
+				const cost = z.position.y == this.position.y;
+				if (cost) {
+					z.damage(10);
+					z.addStatus({ name: `frozen`, time: 4 });
+				}
+			});
+			return new Action({
+				render: {
+					position: this.position,
+					effect: `freezeburn.png`,
+					size: { x: 1, y: 16 },
+					start_y: 0,
+				},
+			});
 		}
-	}
+	},
 };

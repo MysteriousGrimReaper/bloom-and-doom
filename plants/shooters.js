@@ -58,7 +58,14 @@ class Peashooter extends Plant {
 			if (this.apply_effects) {
 				zombie_list[z_index].addStatus(...this.apply_effects);
 			}
-			return new Action({ notes: `Peashooter hit zombie` });
+			return new Action({
+				render: {
+					start_pos: this.position,
+					end_pos: zombie_list[z_index].position,
+					direction: projectile.direction,
+					projectile: `pea.png`,
+				},
+			});
 		}
 	}
 	pierce(action_list, direction) {
@@ -101,7 +108,7 @@ class MelonPult extends Peashooter {
 			sun_cost: 350,
 			damage: 3,
 			cooldown: 5,
-			unlock_timer: 25
+			unlock_timer: 25,
 		});
 		Object.assign(this, data);
 	}
@@ -137,17 +144,19 @@ class MelonPult extends Peashooter {
 		} else {
 			const z_index = zombie_list.indexOf(zombie_colliding);
 			zombie_list[z_index].damage(projectile.damage);
-			zombie_list.forEach(z => {
-				const cost = Math.max(Math.abs(z.position.x - zombie_colliding.position.x),
-				Math.abs(z.position.y - zombie_colliding.position.y))
+			zombie_list.forEach((z) => {
+				const cost = Math.max(
+					Math.abs(z.position.x - zombie_colliding.position.x),
+					Math.abs(z.position.y - zombie_colliding.position.y)
+				);
 				if (cost <= 1) {
-					z.damage(projectile.damage/2)
+					z.damage(projectile.damage / 2);
 					if (this.apply_effects) {
 						z.addStatus(...this.apply_effects);
 					}
 				}
 			});
-			
+
 			return new Action({ notes: `Melonpult hit zombie` });
 		}
 	}
@@ -229,9 +238,9 @@ module.exports = {
 			super({
 				name: `Snow Pea`,
 				sun_cost: 175,
-				apply_effects: [{name: `frozen`, time: 1}],
+				apply_effects: [{ name: `frozen`, time: 1 }],
 				cooldown: 4,
-				unlock_timer: 10
+				unlock_timer: 10,
 			});
 			Object.assign(this, data);
 		}
@@ -243,7 +252,7 @@ module.exports = {
 				sun_cost: 200,
 				damage: 2,
 				damage_type: `fire`,
-				hidden: true
+				hidden: true,
 			});
 		}
 	},
@@ -252,8 +261,8 @@ module.exports = {
 			super({
 				name: `Goo Peashooter`,
 				sun_cost: 175,
-				apply_effects: [{name: `poison`, time: 3}],
-				hidden: true
+				apply_effects: [{ name: `poison`, time: 3 }],
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -265,20 +274,19 @@ module.exports = {
 				sun_cost: 100,
 				mega_cabbage_timer: 3,
 				cooldown: 5,
-				unlock_timer: 25
+				unlock_timer: 25,
 			});
 			Object.assign(this, data);
 		}
 		onEndTurn() {
-			this.mega_cabbage_timer--
+			this.mega_cabbage_timer--;
 			if (this.mega_cabbage_timer <= 0) {
-				this.damage = 3
+				this.damage = 3;
+			} else {
+				this.damage = 1;
 			}
-			else {
-				this.damage = 1
-			}
-			this.mega_cabbage_timer = 3
-			return new Action({notes: `Cabbage-pult charges up`})
+			this.mega_cabbage_timer = 3;
+			return new Action({ notes: `Cabbage-pult charges up` });
 		}
 	},
 	KernelPult: class KernelPult extends Peashooter {
@@ -288,27 +296,30 @@ module.exports = {
 				sun_cost: 100,
 				butter_timer: 3,
 				cooldown: 5,
-				unlock_timer: 25
+				unlock_timer: 25,
 			});
 			Object.assign(this, data);
 		}
 		onEndTurn() {
-			this.butter_timer--
+			this.butter_timer--;
 			if (this.butter_timer <= 0) {
-				this.apply_effects = [{name: `frozen`, time: 2}]
+				this.apply_effects = [{ name: `frozen`, time: 2 }];
+			} else {
+				this.apply_effects = [];
 			}
-			else {
-				this.apply_effects = []
-			}
-			this.butter_timer = 3
-			return new Action({notes: `Kernel-pult butters up`})
+			this.butter_timer = 3;
+			return new Action({ notes: `Kernel-pult butters up` });
 		}
 	},
 	MelonPult,
 	WinterMelon: class WinterMelon extends MelonPult {
 		constructor(data) {
-			super({sun_cost: 600, name: `Winter Melon`, apply_effects: [{name: `frozen`, time: 1}]})
-			Object.assign(this, data)
+			super({
+				sun_cost: 600,
+				name: `Winter Melon`,
+				apply_effects: [{ name: `frozen`, time: 1 }],
+			});
+			Object.assign(this, data);
 		}
-	}
+	},
 };

@@ -36,8 +36,8 @@ module.exports = class Zombie {
 		return this;
 	}
 	addStatus(...statuses) {
-		this.status.push(...statuses)
-		return this
+		this.status.push(...statuses);
+		return this;
 	}
 	setPosition(x, y) {
 		this.position.x = x;
@@ -118,18 +118,19 @@ module.exports = class Zombie {
 		const v_direction = target.position.y - this.position.y;
 		return new Movement(Math.sign(h_direction), Math.sign(v_direction));
 	}
+	onDeath() {
+		this.dead = true;
+		return new Action({
+			render: { position: this.position, effect: `dead.png` },
+		});
+	}
 	onEndTurn(player_list, plant_list) {
 		if (!this.evalStatuses()) {
 			return new Action({
 				zombie_status: ``,
 			});
 		}
-		if (this.health <= 0) {
-			this.dead = true;
-			return new Action({
-				notes: `Zombie has died`,
-			});
-		}
+		const original_pos = [this.position.x, this.position.y];
 		this.move(this.orthoPathfind(player_list, plant_list));
 		player_list.forEach((p) => {
 			if (
@@ -148,7 +149,8 @@ module.exports = class Zombie {
 			}
 		});
 		return new Action({
-			zombie_movement: `Moving to ${this.position.x}, ${this.position.y}`,
+			zombie_start: original_pos,
+			zombie_end: [this.position.x, this.position.y],
 		});
 	}
 };

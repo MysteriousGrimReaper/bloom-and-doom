@@ -23,6 +23,7 @@ module.exports = class ActionList extends Array {
 		this.board_height = 16;
 		this.clock = 0;
 		this.base_sun_gain = 100;
+		this.show_projectiles = true;
 		Object.assign(this, data);
 	}
 	/**
