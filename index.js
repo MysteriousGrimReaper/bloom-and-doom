@@ -1,4 +1,4 @@
-const game_index = 0;
+const game_index = 1;
 
 const Action = require("./structures/action.js");
 const ActionList = require("./structures/action_list.js");
@@ -17,108 +17,20 @@ const actions = new ActionList({ board_width: 16, board_height: 16 });
 const players = new PlayerList();
 players.push(...require("./actions.js").qoth_players);
 actions.setPlayers(players);
+
 actions.push(...require("./actions.js").qoth_actions);
 
 const actions_tdq = new ActionList({ board_width: 16, board_height: 16 });
 const players_tdq = new PlayerList();
 players_tdq.push(
-	...[
-		new Player({
-			name: `arno`,
-			position: new Movement(0, 0),
-			fillStyle: `#2a2`,
-		}),
-		new Player({
-			name: `Bradicus`,
-			position: new Movement(1, 0),
-			fillStyle: `#e44`,
-		}),
-		new Player({
-			name: `Captain Totalitea`,
-			position: new Movement(2, 0),
-			fillStyle: `#77a`,
-		}),
-		new Player({
-			name: `Chilly Billy`,
-			position: new Movement(3, 0),
-			fillStyle: `#aff`,
-		}),
-		new Player({ name: `Cube492`, position: new Movement(4, 0) }),
-		new Player({ name: `Lazarus Alarie`, position: new Movement(5, 0) }),
-		new Player({ name: `Tatters`, position: new Movement(6, 0) }),
-		new Player({ name: `The CAACN`, position: new Movement(7, 0) }),
-		new Player({ name: `CT`, position: new Movement(8, 0) }),
-		new Player({ name: `AMS`, position: new Movement(9, 0) }),
-		new Player({ name: `Lillith Lazuli`, position: new Movement(10, 0) }),
-		new Player({ name: `Azalea`, position: new Movement(11, 0) }),
-		new Player({ name: `Snow SMA`, position: new Movement(12, 0) }),
-		new Player({ name: `Firework Dragon`, position: new Movement(13, 0) }),
-	]
+	...require("./actions.js").tdq_players
 );
 actions_tdq.setPlayers(players_tdq);
+// set tile map
+actions_tdq.setTiles(`................wwwwwww`)
+// console.log(actions_tdq.tile_map)
 actions_tdq.push(
-	...[
-		new Action({ begin_turn: true }),
-		new Action({ end_turn: 5 }),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(4, 4),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(4, 5),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(5, 4),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(5, 5),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(6, 4),
-		}),
-
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(6, 5),
-		}),
-		new Action({
-			end_turn: 1,
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(5, 6),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(4, 6),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(6, 6),
-		}),
-		new Action({
-			end_turn: 10,
-		}),
-		new Action({
-			new_plant: `Starfruit`,
-			position: new Movement(8, 8),
-		}),
-		new Action({
-			new_zombie: `Conehead`,
-			position: new Movement(8, 15),
-		}),
-		new Action({
-			new_zombie: `Conehead`,
-			position: new Movement(0, 8),
-		}),
-		new Action({
-			end_turn: 7,
-		}),
-	]
+	...require("./actions.js").tdq_actions
 );
 
 games.push(actions);
@@ -141,6 +53,7 @@ console.log(`Done`);
 
 // draw image
 const { createCanvas, loadImage, registerFont } = require("canvas");
+const { Tiles } = require("./structures/enums.js");
 registerFont("assets/Archivo-SemiBold.ttf", { family: "Archivo" });
 registerFont("assets/HelveticaNeueMedium.otf", { family: "HelveticaNeue" });
 const canvas = createCanvas(1920, 1080);
@@ -204,10 +117,24 @@ async function drawBG() {
 
 	// Draw bg under players
 	const board_color = "#FFF090";
+	const water_color = "#0000FF30"
 	ctx.strokeStyle = board_color;
 	ctx.fillStyle = board_color + "30";
 
+	// draw tiles
 	ctx.fillRect(bb[0], bb[1], bb[2] * board_width, bb[3] * board_height);
+	for (let i in games[game_index].tile_map) {
+		for (let j in games[game_index].tile_map) {
+			switch (games[game_index].tile_map[i][j]) {
+				case Tiles.Water:
+					ctx.fillStyle = water_color
+					ctx.fillRect(bb[0] + bb[2] * j, bb[1] + bb[3]* i, bb[2], bb[3])
+					break
+			}
+			
+		}
+	}
+	
 	// grid
 	ctx.beginPath();
 	let i = 0;
@@ -336,9 +263,9 @@ async function drawBG() {
 			p.status.forEach(async (s) => {
 				let s_image;
 				try {
-					s_image = await loadImage(`./assets/${s.name}.png`);
+					s_image = await loadImage(`./assets/statuses/${s.name}.png`);
 				} catch {
-					s_image = await loadImage(`./assets/default_status.png`);
+					s_image = await loadImage(`./assets/statuses/default_status.png`);
 				}
 				ctx.drawImage(
 					s_image,
@@ -458,59 +385,60 @@ async function drawBG() {
 		ctx.textAlign = "right";
 		ctx.fillText(i, 1040, 143 + i * 50);
 	}
-	render_images.forEach(async (action) => {
-		const { render } = action;
-		if (render.effect) {
-			await ctx.drawImage(
-				await loadImage(
-					path.join(__dirname, `/assets/effects/${render.effect}`)
-				),
-				bb[0] +
-					(render?.start_x ??
-						render.position.x - ((render?.size?.x ?? 1) - 1) / 2) *
-						bb[2],
-				bb[1] +
-					(render?.start_y ??
-						render.position.y - ((render?.size?.y ?? 1) - 1) / 2) *
-						bb[3],
-				bb[2] * (render?.size?.x ?? 1),
-				bb[3] * (render?.size?.y ?? 1)
-			);
-		} else if (render.projectile) {
-			const projectile_image = await loadImage(
-				path.join(__dirname, `/assets/projectiles/${render.projectile}`)
-			);
-			let draw_x = render.start_pos.x;
-			let draw_y = render.start_pos.y;
-			const repetitions = isNaN(
-				Math.abs((draw_x - render.end_pos.x) / render.direction.x)
-			)
-				? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
-				: Math.abs((draw_x - render.end_pos.x) / render.direction.x);
-			let i = 0;
-			while (i < repetitions) {
-				ctx.globalAlpha = i / repetitions;
+	for (const action of render_images) {
+			const { render } = action;
+			if (render.effect) {
+				ctx.globalAlpha = render.alpha ?? 1
 				await ctx.drawImage(
-					projectile_image,
+					await loadImage(
+						path.join(__dirname, `/assets/effects/${render.effect}`)
+					),
 					bb[0] +
 						(render?.start_x ??
-							draw_x - ((render?.size?.x ?? 1) - 1) / 2) *
-							bb[2] +
-						margin,
+							render.position.x - ((render?.size?.x ?? 1) - 1) / 2) *
+							bb[2],
 					bb[1] +
 						(render?.start_y ??
-							draw_y - ((render?.size?.y ?? 1) - 1) / 2) *
-							bb[3] +
-						margin,
-					bb[2] * (render?.size?.x ?? 1) - margin * 2,
-					bb[3] * (render?.size?.y ?? 1) - margin * 2
+							render.position.y - ((render?.size?.y ?? 1) - 1) / 2) *
+							bb[3],
+					bb[2] * (render?.size?.x ?? 1),
+					bb[3] * (render?.size?.y ?? 1)
 				);
-				draw_x += render.direction.x;
-				draw_y += render.direction.y;
-				i++;
+			} else if (render.projectile) {
+				const projectile_image = await loadImage(
+					path.join(__dirname, `/assets/projectiles/${render.projectile}`)
+				);
+				let draw_x = render.start_pos.x;
+				let draw_y = render.start_pos.y;
+				const repetitions = isNaN(
+					Math.abs((draw_x - render.end_pos.x) / render.direction.x)
+				)
+					? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
+					: Math.abs((draw_x - render.end_pos.x) / render.direction.x);
+				let i = 0;
+				while (i < repetitions) {
+					ctx.globalAlpha = i / repetitions;
+					await ctx.drawImage(
+						projectile_image,
+						bb[0] +
+							(render?.start_x ??
+								draw_x - ((render?.size?.x ?? 1) - 1) / 2) *
+								bb[2] +
+							margin,
+						bb[1] +
+							(render?.start_y ??
+								draw_y - ((render?.size?.y ?? 1) - 1) / 2) *
+								bb[3] +
+							margin,
+						bb[2] * (render?.size?.x ?? 1) - margin * 2,
+						bb[3] * (render?.size?.y ?? 1) - margin * 2
+					);
+					draw_x += render.direction.x;
+					draw_y += render.direction.y;
+					i++;
+				}
 			}
-		}
-	});
+	}
 }
 drawBG().then(() => {
 	const out = fs.createWriteStream(

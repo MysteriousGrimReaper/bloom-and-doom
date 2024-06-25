@@ -76,6 +76,7 @@ class Peashooter extends Plant {
 	}
 	pierce(action_list, direction) {
 		const { zombie_list, board_width, board_height } = action_list;
+		let repetitions = 1
 		const projectile = {
 			x: this.position.x,
 			y: this.position.y,
@@ -88,7 +89,11 @@ class Peashooter extends Plant {
 		const isOutOfBounds = (x, y) => {
 			return x < 0 || y < 0 || x >= board_width || y >= board_height;
 		};
+		const render_list = []
 		while (!isOutOfBounds(projectile.x, projectile.y)) {
+			render_list.push(new Action({render: { 
+				position: new Movement(projectile.x, projectile.y), 
+				effect: `${this.projectile_sprite}.png`, alpha: 0.5}}))
 			projectile.x += projectile.direction.x;
 			projectile.y += projectile.direction.y;
 			zombie_colliding = zombie_list.find((z) => {
@@ -100,8 +105,12 @@ class Peashooter extends Plant {
 				const z_index = zombie_list.indexOf(zombie_colliding);
 				zombie_list[z_index].damage(projectile.damage);
 			}
+			repetitions++
 		}
-		return new Action({ notes: `Pierce` });
+		render_list.shift()
+		return new Action({
+			actions: render_list,
+		});
 	}
 	onEndTurn(action_list) {
 		return this.shoot(action_list, this.direction);
@@ -191,6 +200,28 @@ module.exports = {
 			});
 		}
 	},
+	Rotobaga: class Rotobaga extends Peashooter {
+		constructor(data) {
+			super({
+				name: `Rotobaga`,
+				sun_cost: 350,
+				unlock_timer: 12,
+				projectile_sprite: `rutabaga`,
+				flying: true
+			});
+			Object.assign(this, data);
+		}
+		onEndTurn(action_list) {
+			return new Action({
+				actions: [
+					this.shoot(action_list, new Movement(-1, 1)),
+					this.shoot(action_list, new Movement(1, 1)),
+					this.shoot(action_list, new Movement(1, -1)),
+					this.shoot(action_list, new Movement(-1, -1)),
+				],
+			});
+		}
+	},
 	SplitPea: class SplitPea extends Peashooter {
 		constructor(data) {
 			super({ name: `Split Pea`, sun_cost: 300, unlock_timer: 9 });
@@ -225,12 +256,11 @@ module.exports = {
 	},
 	LaserBean: class LaserBean extends Peashooter {
 		constructor(data) {
-			super({ name: `Laser Bean`, sun_cost: 175, unlock_timer: 4 });
+			super({ name: `Laser Bean`, sun_cost: 175, unlock_timer: 4, projectile_sprite: `bolt` });
 			Object.assign(this, data);
 		}
 		onEndTurn(action_list) {
-			this.pierce(action_list, this.direction);
-			return new Action({ notes: `Laser Bean shoots` });
+			return this.pierce(action_list, this.direction);
 		}
 	},
 	Guacodile: class Guacodile extends Peashooter {
