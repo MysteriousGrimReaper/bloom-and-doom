@@ -5,7 +5,7 @@ const path = require("path");
 module.exports = class Zombie {
 	constructor(data) {
 		this.health = 3;
-
+		this.pathfind_ai = this.orthoPathfind;
 		this.position = new Movement(0, 0);
 		this.bite = 1;
 		this.name = `Zombie`;
@@ -45,7 +45,7 @@ module.exports = class Zombie {
 	}
 	async sprite() {
 		return await loadImage(
-			path.join(__dirname, `../assets/${this.name}.png`)
+			path.join(__dirname, `../assets/zombies/${this.name}.png`)
 		);
 	}
 	move(movement) {
@@ -96,8 +96,8 @@ module.exports = class Zombie {
 	}
 	orthoPathfind(player_list, plant_list) {
 		const target = this.closest(player_list, plant_list);
-		console.log(`Target position:`);
-		console.log(target.position);
+		//console.log(`Target position:`);
+		//console.log(target.position);
 		const h_direction = target.position.x - this.position.x;
 		const v_direction = target.position.y - this.position.y;
 		const go_h_axis = Math.abs(h_direction) >= Math.abs(v_direction);
@@ -106,9 +106,9 @@ module.exports = class Zombie {
 			go_h_axis ? Math.sign(h_direction) : 0,
 			!go_h_axis ? Math.sign(v_direction) : 0
 		);
-		console.log(`Current position:`);
-		console.log(this.position);
-		console.log(movement_direction);
+		//console.log(`Current position:`);
+		//console.log(this.position);
+		//console.log(movement_direction);
 		return movement_direction;
 	}
 	diagPathfind(player_list, plant_list) {
@@ -118,19 +118,20 @@ module.exports = class Zombie {
 		return new Movement(Math.sign(h_direction), Math.sign(v_direction));
 	}
 	onDeath() {
-		console.log(`zombie died`)
+		console.log(`zombie died`);
 		return new Action({
 			render: { position: this.position, effect: `dead.png` },
 		});
 	}
-	onEndTurn(player_list, plant_list) {
+	onEndTurn(action_list) {
+		const { player_list, plant_list } = action_list;
 		if (!this.evalStatuses()) {
 			return new Action({
 				zombie_status: ``,
 			});
 		}
 		const original_pos = [this.position.x, this.position.y];
-		this.move(this.orthoPathfind(player_list, plant_list));
+		this.move(this.pathfind_ai(player_list, plant_list));
 		player_list.forEach((p) => {
 			if (
 				p.position.x == this.position.x &&

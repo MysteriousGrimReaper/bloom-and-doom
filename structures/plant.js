@@ -19,7 +19,7 @@ module.exports = class Plant {
 	}
 	async sprite() {
 		return await loadImage(
-			path.join(__dirname, `../assets/${this.name}.png`)
+			path.join(__dirname, `../assets/plants/${this.name}.png`)
 		);
 	}
 	onPlant() {

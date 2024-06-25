@@ -18,7 +18,7 @@ module.exports = {
 			return await loadImage(
 				path.join(
 					__dirname,
-					`../assets/${this.name}${
+					`../assets/plants/${this.name}${
 						this.recharge_timer <= 0 ? `` : ` Unarmed`
 					}.png`
 				)

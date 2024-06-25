@@ -1,5 +1,4 @@
 const game_index = 0;
-const ff = 3;
 
 const Action = require("./structures/action.js");
 const ActionList = require("./structures/action_list.js");
@@ -16,110 +15,34 @@ const Zombie = require("./structures/zombie.js");
 const games = [];
 const actions = new ActionList({ board_width: 16, board_height: 16 });
 const players = new PlayerList();
-players.push(
-	...[new Player({ name: `woooowoooo`, position: new Movement(9, 9, true) })]
-);
+players.push(...require("./actions.js").qoth_players);
 actions.setPlayers(players);
-actions.push(
-	...[
-		new Action({ begin_turn: true }),
-		new Action({ new_plant: `Sunflower`, position: new Movement(8, 8) }),
-		new Action({ new_plant: `PotatoMine`, position: new Movement(10, 10) }),
-		new Action({
-			new_plant: `IcebergLettuce`,
-			position: new Movement(8, 10),
-		}),
-		new Action({
-			end_turn: true,
-		}),
-		new Action({
-			player: `woooowoooo`,
-			movement: new Movement(-1, -1),
-		}),
-		new Action({
-			new_plant: `Peashooter`,
-			position: new Movement(7, 9),
-			direction: new Movement(0, 1),
-		}),
-		new Action({
-			new_plant: `Sunflower`,
-			position: new Movement(7, 7),
-		}),
-		new Action({ end_turn: true }),
-		new Action({
-			new_plant: `Sunflower`,
-			position: new Movement(7, 8),
-		}),
-		new Action({
-			new_plant: `Sunflower`,
-			position: new Movement(8, 7),
-		}),
-		new Action({
-			new_plant: `Sunflower`,
-			position: new Movement(9, 8),
-		}),
-		new Action({
-			player: `woooowoooo`,
-			movement: new Movement(7, 7, false),
-		}),
-		new Action({ end_turn: true }),
-		// (7, 8), (7, 9), (8, 7), and (9, 7)
-		new Action({
-			new_plant: `Sunflower`,
-			position: new Movement(6, 7),
-		}),
-		new Action({
-			new_plant: `Sunflower`,
-			position: new Movement(6, 8),
-		}),
-		new Action({
-			new_plant: `Sunflower`,
-			position: new Movement(7, 6),
-		}),
-		new Action({
-			new_plant: `Sunflower`,
-			position: new Movement(8, 6),
-		}),
-		new Action({
-			end_turn: true,
-		}),
-		new Action({
-			new_zombie: "Basic",
-			position: new Movement(12, 0),
-		}),
-		new Action({
-			new_zombie: "Basic",
-			position: new Movement(15, 3),
-		}),
-		new Action({
-			new_zombie: "Basic",
-			position: new Movement(9, 15),
-		}),
-		new Action({
-			new_zombie: "Basic",
-			position: new Movement(0, 10),
-		}),
-		new Action({
-			new_plant: "LaserBean",
-			position: new Movement(6, 6),
-			direction: new Movement(3, -1),
-		}),
-		new Action({
-			new_plant: "Peashooter",
-			position: new Movement(9, 9),
-			direction: new Movement(0, 1)
-		})
-	]
-);
+actions.push(...require("./actions.js").qoth_actions);
 
 const actions_tdq = new ActionList({ board_width: 16, board_height: 16 });
 const players_tdq = new PlayerList();
 players_tdq.push(
 	...[
-		new Player({ name: `arno`, position: new Movement(0, 0) }),
-		new Player({ name: `Bradicus`, position: new Movement(1, 0) }),
-		new Player({ name: `Captain Totalitea`, position: new Movement(2, 0) }),
-		new Player({ name: `Chilly Billy`, position: new Movement(3, 0) }),
+		new Player({
+			name: `arno`,
+			position: new Movement(0, 0),
+			fillStyle: `#2a2`,
+		}),
+		new Player({
+			name: `Bradicus`,
+			position: new Movement(1, 0),
+			fillStyle: `#e44`,
+		}),
+		new Player({
+			name: `Captain Totalitea`,
+			position: new Movement(2, 0),
+			fillStyle: `#77a`,
+		}),
+		new Player({
+			name: `Chilly Billy`,
+			position: new Movement(3, 0),
+			fillStyle: `#aff`,
+		}),
 		new Player({ name: `Cube492`, position: new Movement(4, 0) }),
 		new Player({ name: `Lazarus Alarie`, position: new Movement(5, 0) }),
 		new Player({ name: `Tatters`, position: new Movement(6, 0) }),
@@ -136,22 +59,68 @@ actions_tdq.setPlayers(players_tdq);
 actions_tdq.push(
 	...[
 		new Action({ begin_turn: true }),
+		new Action({ end_turn: 5 }),
 		new Action({
-			new_plant: `Peashooter`,
-			position: new Movement(8, 8),
-			direction: new Movement(0, 1),
-		}),
-		new Action({ new_zombie: `Basic`, position: new Movement(8, 15) }),
-		...Array(20).fill(new Action({ end_turn: true })),
-		new Action({
-			new_plant: `Jalapeno`,
+			new_plant: `Moonflower`,
 			position: new Movement(4, 4),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(4, 5),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(5, 4),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(5, 5),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(6, 4),
+		}),
+
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(6, 5),
+		}),
+		new Action({
+			end_turn: 1,
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(5, 6),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(4, 6),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(6, 6),
+		}),
+		new Action({
+			end_turn: 10,
+		}),
+		new Action({
+			new_plant: `Starfruit`,
+			position: new Movement(8, 8),
+		}),
+		new Action({
+			new_zombie: `Conehead`,
+			position: new Movement(8, 15),
+		}),
+		new Action({
+			new_zombie: `Conehead`,
+			position: new Movement(0, 8),
+		}),
+		new Action({
+			end_turn: 7,
 		}),
 	]
 );
 
-actions.push(...Array(ff).fill(new Action({ end_turn: true })));
-actions_tdq.push(...Array(ff).fill(new Action({ end_turn: true })));
 games.push(actions);
 games.push(actions_tdq);
 
@@ -193,15 +162,26 @@ while (!games[game_index][last_turn_index]?.end_turn && last_turn_index >= 0) {
 const render_images = games[game_index]
 	.slice(last_turn_index)
 	.filter((action) => action.render);
+const tile_render_images = games[game_index]
+	.slice(last_turn_index)
+	.filter((action) => action.tile_render);
 async function drawBG() {
 	const entity_images = [];
 	const lock_image = await loadImage(`./assets/lock.png`);
 	for (let i of [...player_list, ...plant_list, ...zombie_list]) {
 		let image;
 		try {
-			image = await loadImage(`./assets/${i.name}.png`);
+			image = await loadImage(`./assets/plants/${i.name}.png`);
 		} catch {
-			image = await loadImage("./assets/default.png");
+			try {
+				image = await loadImage(`./assets/players/${i.name}.png`);
+			} catch {
+				try {
+					image = await loadImage(`./assets/zombies/${i.name}.png`);
+				} catch {
+					image = await loadImage("./assets/default.png");
+				}
+			}
 		}
 		entity_images.push(
 			await {
@@ -223,10 +203,12 @@ async function drawBG() {
 	ctx.fillText(`☀️ ${sun}`, 1300, 100);
 
 	// Draw bg under players
-	ctx.strokeStyle = "rgba(0,255,0,1)";
-	ctx.fillStyle = "rgba(0,255,0,0.2)";
+	const board_color = "#FFF090";
+	ctx.strokeStyle = board_color;
+	ctx.fillStyle = board_color + "30";
 
 	ctx.fillRect(bb[0], bb[1], bb[2] * board_width, bb[3] * board_height);
+	// grid
 	ctx.beginPath();
 	let i = 0;
 	while (i <= board_width) {
@@ -242,8 +224,63 @@ async function drawBG() {
 	}
 
 	ctx.stroke();
+	// render tile (behind entities)
+	tile_render_images.forEach(async (action) => {
+		const render = action.tile_render;
+		if (render.effect) {
+			await ctx.drawImage(
+				await loadImage(
+					path.join(__dirname, `/assets/effects/${render.effect}`)
+				),
+				bb[0] +
+					(render?.start_x ??
+						render.position.x - ((render?.size?.x ?? 1) - 1) / 2) *
+						bb[2],
+				bb[1] +
+					(render?.start_y ??
+						render.position.y - ((render?.size?.y ?? 1) - 1) / 2) *
+						bb[3],
+				bb[2] * (render?.size?.x ?? 1),
+				bb[3] * (render?.size?.y ?? 1)
+			);
+		} else if (render.projectile) {
+			const projectile_image = await loadImage(
+				path.join(__dirname, `/assets/projectiles/${render.projectile}`)
+			);
+			let draw_x = render.start_pos.x;
+			let draw_y = render.start_pos.y;
+			const repetitions = isNaN(
+				Math.abs((draw_x - render.end_pos.x) / render.direction.x)
+			)
+				? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
+				: Math.abs((draw_x - render.end_pos.x) / render.direction.x);
+			let i = 0;
+			while (i < repetitions) {
+				ctx.globalAlpha = i / repetitions;
+				await ctx.drawImage(
+					projectile_image,
+					bb[0] +
+						(render?.start_x ??
+							draw_x - ((render?.size?.x ?? 1) - 1) / 2) *
+							bb[2] +
+						margin,
+					bb[1] +
+						(render?.start_y ??
+							draw_y - ((render?.size?.y ?? 1) - 1) / 2) *
+							bb[3] +
+						margin,
+					bb[2] * (render?.size?.x ?? 1) - margin * 2,
+					bb[3] * (render?.size?.y ?? 1) - margin * 2
+				);
+				draw_x += render.direction.x;
+				draw_y += render.direction.y;
+				i++;
+			}
+		}
+	});
 	const margin = 3;
 	await [...plant_list, ...zombie_list, ...player_list].forEach(async (p) => {
+		// draw entities
 		await ctx.drawImage(
 			await p.sprite(),
 			bb[0] + p.position.x * bb[2] + margin,
@@ -251,6 +288,7 @@ async function drawBG() {
 			bb[2] - margin * 2,
 			bb[3] - margin * 2
 		);
+		// direction arrow
 		if (p.direction) {
 			ctx.fillStyle = `rgb(255, 255, 255)`;
 			ctx.beginPath();
@@ -293,6 +331,7 @@ async function drawBG() {
 			);
 			ctx.fill();
 		}
+		// status
 		if (p.status) {
 			p.status.forEach(async (s) => {
 				let s_image;
@@ -310,30 +349,42 @@ async function drawBG() {
 				);
 			});
 		}
+		// health bar
 		if (p.health < p.max_health) {
-			const proportion = p.health / p.max_health
-			ctx.fillStyle = `rgb(${(proportion) < 0.66 ? `200`:  `0`}, ${(proportion) > 0.33 ? `200` :  `0`}, 20)`
-			ctx.beginPath()
-			
+			const proportion = p.health / p.max_health;
+			ctx.fillStyle = `rgb(${proportion < 0.67 ? `200` : `0`}, ${
+				proportion > 0.33 ? `200` : `0`
+			}, 20)`;
+			ctx.beginPath();
 			ctx.rect(
 				bb[0] + p.position.x * bb[2],
 				bb[1] + p.position.y * bb[3] - 2,
 				bb[2] * proportion,
 				4
-			)
-			ctx.fill()
+			);
+			ctx.fill();
+			ctx.strokeStyle = `rgb(255, 255, 255)`;
+			ctx.beginPath();
+			ctx.rect(
+				bb[0] + p.position.x * bb[2],
+				bb[1] + p.position.y * bb[3] - 2,
+				bb[2],
+				4
+			);
+			ctx.stroke();
+			ctx.fillStyle = `rgb(255, 255, 255)`;
 		}
 	});
-	/**
-	 * STATE EXCLUSIVE
-	 */
+	// plant labels
 	ctx.fillStyle = `rgb(255, 255, 255)`;
+	ctx.strokeStyle = `rgb(255, 255, 255)`;
 	const g_offset = 250;
 	const gardener_label_offset = 80;
 	ctx.fillText(`Gardeners`, 373 + g_offset + gardener_label_offset, 105);
 	ctx.fillText(`Seeds`, g_offset - 100, 105);
 	ctx.font = "30px Archivo";
 	for (let p in player_list) {
+		ctx.fillStyle = player_list[p].fillStyle ?? `#ffffff`;
 		ctx.fillText(
 			player_list[p].name,
 			373 + g_offset + gardener_label_offset,
@@ -353,6 +404,7 @@ async function drawBG() {
 		const is_recharged = !(
 			temp_plant.unlock_timer > 0 || temp_plant.cooldown_timer > 0
 		);
+		ctx.fillStyle = temp_plant.fillStyle ?? `#fff`;
 		if (!is_recharged) {
 			ctx.fillStyle = "rgb(122, 122, 122)";
 			ctx.fillText(
@@ -398,9 +450,8 @@ async function drawBG() {
 				? `rgb(255, 100, 100)`
 				: `rgb(100, 100, 100)`;
 		ctx.fillText(`☀️ ${temp_plant.sun_cost}`, g_offset + 150, 155 + 40 * p);
-		ctx.fillStyle = "rgb(255, 255, 255)";
 	}
-	ctx.fillStyle = "rgba(100,255,100,0.5)";
+	ctx.fillStyle = board_color + "88";
 	for (let i = 1; i <= 16; i++) {
 		ctx.textAlign = "center";
 		ctx.fillText(i, 1025 + i * 50, 153);
@@ -417,15 +468,13 @@ async function drawBG() {
 				bb[0] +
 					(render?.start_x ??
 						render.position.x - ((render?.size?.x ?? 1) - 1) / 2) *
-						bb[2] +
-					margin,
+						bb[2],
 				bb[1] +
 					(render?.start_y ??
 						render.position.y - ((render?.size?.y ?? 1) - 1) / 2) *
-						bb[3] +
-					margin,
-				bb[2] * (render?.size?.x ?? 1) - margin * 2,
-				bb[3] * (render?.size?.y ?? 1) - margin * 2
+						bb[3],
+				bb[2] * (render?.size?.x ?? 1),
+				bb[3] * (render?.size?.y ?? 1)
 			);
 		} else if (render.projectile) {
 			const projectile_image = await loadImage(
@@ -440,9 +489,6 @@ async function drawBG() {
 				: Math.abs((draw_x - render.end_pos.x) / render.direction.x);
 			let i = 0;
 			while (i < repetitions) {
-				console.log(
-					`drawing ${render.projectile} at ${draw_x}, ${draw_y}`
-				);
 				ctx.globalAlpha = i / repetitions;
 				await ctx.drawImage(
 					projectile_image,

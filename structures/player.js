@@ -8,7 +8,7 @@ module.exports = class Player {
 	}
 	async sprite() {
 		return await loadImage(
-			path.join(__dirname, `../assets/${this.name}.png`)
+			path.join(__dirname, `../assets/players/${this.name}.png`)
 		);
 	}
 };

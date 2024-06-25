@@ -3,7 +3,13 @@ const Action = require("../structures/action.js");
 const Movement = require("../structures/movement.js");
 class Peashooter extends Plant {
 	constructor(data) {
-		super({ name: `Peashooter`, sun_cost: 100, damage: 1, cooldown: 1 });
+		super({
+			name: `Peashooter`,
+			sun_cost: 100,
+			damage: 1,
+			cooldown: 1,
+			projectile_sprite: `pea`,
+		});
 		Object.assign(this, data);
 	}
 	range() {
@@ -63,7 +69,7 @@ class Peashooter extends Plant {
 					start_pos: this.position,
 					end_pos: zombie_list[z_index].position,
 					direction: projectile.direction,
-					projectile: `pea.png`,
+					projectile: `${this.projectile_sprite}.png`,
 				},
 			});
 		}
@@ -165,16 +171,24 @@ module.exports = {
 	Peashooter,
 	Starfruit: class Starfruit extends Peashooter {
 		constructor(data) {
-			super({ name: `Starfruit`, sun_cost: 400, unlock_timer: 12 });
+			super({
+				name: `Starfruit`,
+				sun_cost: 400,
+				unlock_timer: 12,
+				projectile_sprite: `star`,
+			});
 			Object.assign(this, data);
 		}
 		onEndTurn(action_list) {
-			this.shoot(action_list, new Movement(-1, 0));
-			this.shoot(action_list, new Movement(0, 1));
-			this.shoot(action_list, new Movement(0, -1));
-			this.shoot(action_list, new Movement(2, 1));
-			this.shoot(action_list, new Movement(2, -1));
-			return new Action({ notes: `Starfruit shoots` });
+			return new Action({
+				actions: [
+					this.shoot(action_list, new Movement(-1, 0)),
+					this.shoot(action_list, new Movement(0, 1)),
+					this.shoot(action_list, new Movement(0, -1)),
+					this.shoot(action_list, new Movement(2, 1)),
+					this.shoot(action_list, new Movement(2, -1)),
+				],
+			});
 		}
 	},
 	SplitPea: class SplitPea extends Peashooter {

@@ -26,6 +26,27 @@ module.exports = class ActionList extends Array {
 		this.show_projectiles = true;
 		Object.assign(this, data);
 	}
+	nearPlants(position, radius) {
+		return this.plant_list.filter((p) => {
+			const cost =
+				Math.abs(p.position.x - position.x) +
+				Math.abs(p.position.y - position.y);
+			if (cost <= radius) {
+				return true;
+			}
+		});
+	}
+	nearPlantsSquare(position, radius) {
+		return this.plant_list.filter((p) => {
+			const cost = Math.max(
+				Math.abs(p.position.x - position.x),
+				Math.abs(p.position.y - position.y)
+			);
+			if (cost <= radius) {
+				return true;
+			}
+		});
+	}
 	/**
 	 *
 	 * @param {Movement} position position to check
@@ -51,6 +72,9 @@ module.exports = class ActionList extends Array {
 			const target_player = this[i].player
 				? this.player_list.find((p) => p.name == this[i].player)
 				: false;
+			if (this[i].actions) {
+				this.splice(i + 1, 0, ...this[i].actions);
+			}
 			if (this[i].new_plant) {
 				try {
 					this[i].plant = new a[this[i].new_plant]();
@@ -74,7 +98,7 @@ module.exports = class ActionList extends Array {
 					this[i].plant.direction = this[i].direction;
 				}
 				this.plant_list.push(this[i].plant);
-				this.splice(i + 1, 0, this[i].plant.onPlant());
+				this.splice(i + 1, 0, this[i].plant.onPlant(this));
 			}
 			if (this[i].new_zombie) {
 				try {
@@ -88,12 +112,19 @@ module.exports = class ActionList extends Array {
 				}
 				this[i].zombie.position = this[i].position;
 				this.zombie_list.push(this[i].zombie);
-				this.splice(i + 1, 0, this[i].zombie.onEnter());
+				this.splice(i + 1, 0, this[i].zombie.onEnter(this));
 			}
 			if (this[i].new_player) {
 				this.player_list.push(this[i].new_player);
 			}
 			if (this[i].end_turn) {
+				if (this[i].end_turn > 1) {
+					this.splice(
+						i + 1,
+						0,
+						new Action({ end_turn: this[i].end_turn - 1 })
+					);
+				}
 				let actions_added = 0;
 				for (let p of this.plant_list) {
 					const plant_action = p.onEndTurn(this);
@@ -104,10 +135,7 @@ module.exports = class ActionList extends Array {
 				}
 
 				for (let z of this.zombie_list) {
-					const zombie_action = z.onEndTurn(
-						this.player_list,
-						this.plant_list
-					);
+					const zombie_action = z.onEndTurn(this);
 					if (zombie_action) {
 						actions_added++;
 						this.splice(i + actions_added, 0, zombie_action);
