@@ -2,53 +2,60 @@ const Plant = require("../structures/plant.js");
 const Action = require("../structures/action.js");
 const { loadImage } = require("canvas");
 const path = require("path");
-
-module.exports = {
-	PotatoMine: class PotatoMine extends Plant {
-		constructor(data) {
-			super({
-				name: `Potato Mine`,
-				sun_cost: 25,
-				recharge_timer: 4,
-				cooldown: 6,
+class PotatoMine extends Plant {
+	constructor(data) {
+		super({
+			name: `Potato Mine`,
+			sun_cost: 25,
+			recharge_timer: 4,
+			cooldown: 6,
+			explosion_sprite: `spudow`
+		});
+		Object.assign(this, data);
+	}
+	async sprite() {
+		return await loadImage(
+			path.join(
+				__dirname,
+				`../assets/plants/${this.name}${
+					this.recharge_timer <= 0 ? `` : ` Unarmed`
+				}.png`
+			)
+		);
+	}
+	onEndTurn() {
+		this.recharge_timer--;
+		return new Action({
+			notes:
+				this.recharge_timer <= 0
+					? `Potato mine ready!`
+					: `Potato mine timer: ${this.recharge_timer}`,
+		});
+	}
+	onDeath(action_list) {
+		if (this.recharge_timer <= 0) {
+			const { zombie_list } = action_list;
+			zombie_list.forEach((z) => {
+				const cost = Math.max(
+					Math.abs(z.position.x - this.position.x),
+					Math.abs(z.position.y - this.position.y)
+				);
+				if (cost <= 0) {
+					z.damage(25);
+				}
 			});
-			Object.assign(this, data);
-		}
-		async sprite() {
-			return await loadImage(
-				path.join(
-					__dirname,
-					`../assets/plants/${this.name}${
-						this.recharge_timer <= 0 ? `` : ` Unarmed`
-					}.png`
-				)
-			);
-		}
-		onEndTurn() {
-			this.recharge_timer--;
 			return new Action({
-				notes:
-					this.recharge_timer <= 0
-						? `Potato mine ready!`
-						: `Potato mine timer: ${this.recharge_timer}`,
+				render: { position: this.position, effect: `${this.explosion_sprite}.png` },
 			});
 		}
-		onDeath(action_list) {
-			if (this.recharge_timer <= 0) {
-				const { zombie_list } = action_list;
-				zombie_list.forEach((z) => {
-					const cost = Math.max(
-						Math.abs(z.position.x - this.position.x),
-						Math.abs(z.position.y - this.position.y)
-					);
-					if (cost <= 0) {
-						z.damage(25);
-					}
-				});
-				return new Action({
-					render: { position: this.position, effect: `spudow.png` },
-				});
-			}
+	}
+}
+module.exports = {
+	PotatoMine,
+	TangleKelp: class TangleKelp extends PotatoMine {
+		constructor(data) {
+			super({name: `Tangle Kelp`, recharge_timer: 0, aquatic: true, explosion_sprite: `kelp`})
+			Object.assign(this, data)
 		}
 	},
 	CherryBomb: class CherryBomb extends Plant {

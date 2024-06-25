@@ -97,7 +97,7 @@ module.exports = {
 		}
 		onEndTurn(action_list) {
 			const moonflowers = action_list
-				.nearPlantsSquare(this.position, 1)
+				.nearSquare(this.position, 1)
 				.filter(
 					(p) =>
 						p.name == this.name &&

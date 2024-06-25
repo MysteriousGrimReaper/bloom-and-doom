@@ -19,6 +19,14 @@ module.exports = class Zombie {
 		});
 	}
 	evalStatuses() {
+		const poison = this.status.find((s) => s.name == `frozen`);
+		if (poison != undefined) {
+			if (poison.time > 0) {
+				this.damage(1)
+			} else {
+				this.status.splice(this.status.indexOf(poison), 1);
+			}
+		}
 		const frozen = this.status.find((s) => s.name == `frozen`);
 		if (frozen != undefined) {
 			if (frozen.time > 0) {
@@ -147,11 +155,12 @@ module.exports = class Zombie {
 				p.health -= this.bite;
 			}
 		});
-		return new Action({
+		const render = this.position.x == original_pos[0] && this.position.y == original_pos[1] ? {} : {
 			render: {
 				position: new Movement(original_pos[0], original_pos[1]),
 				effect: `zombieoutline.png`,
 			},
-		});
+		}
+		return new Action(render);
 	}
 };

@@ -18,7 +18,8 @@ module.exports = {
 			super({
 				name: `Infi-nut`,
 				sun_cost: 75,
-				health: 7,
+				health: 4,
+				max_health: 4,
 				unlock_timer: 15,
 			});
 			Object.assign(this, data);

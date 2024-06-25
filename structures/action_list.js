@@ -55,8 +55,20 @@ module.exports = class ActionList extends Array {
 		
 		return board_map
 	}
-	nearPlants(position, radius) {
-		return this.plant_list.filter((p) => {
+	near(position, radius, list = `plants`) {
+		let list_to_use = this.plant_list
+		switch(list) {
+			case `plants`:
+				list_to_use = this.plant_list
+				break
+			case `zombies`:
+				list_to_use = this.zombie_list
+				break
+			case `players`:
+				list_to_use = this.player_list
+				break
+		}
+		return list_to_use.filter((p) => {
 			const cost =
 				Math.abs(p.position.x - position.x) +
 				Math.abs(p.position.y - position.y);
@@ -64,9 +76,23 @@ module.exports = class ActionList extends Array {
 				return true;
 			}
 		});
+		
 	}
-	nearPlantsSquare(position, radius) {
-		return this.plant_list.filter((p) => {
+	nearSquare(position, radius, list = `plants`) {
+		let list_to_use = this.plant_list
+		switch(list) {
+			case `plants`:
+				list_to_use = this.plant_list
+				break
+			case `zombies`:
+				list_to_use = this.zombie_list
+				break
+			case `players`:
+				list_to_use = this.player_list
+				break
+		}
+
+		return list_to_use.filter((p) => {
 			const cost = Math.max(
 				Math.abs(p.position.x - position.x),
 				Math.abs(p.position.y - position.y)

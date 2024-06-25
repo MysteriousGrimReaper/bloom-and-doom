@@ -152,12 +152,20 @@ async function drawBG() {
 
 	ctx.stroke();
 	// render tile (behind entities)
-	tile_render_images.forEach(async (action) => {
+	for (const action of tile_render_images) {
 		const render = action.tile_render;
 		if (render.effect) {
+			ctx.globalAlpha = render.alpha ?? 1;
 			await ctx.drawImage(
 				await loadImage(
-					path.join(__dirname, `/assets/effects/${render.effect}`)
+					path.join(
+						__dirname,
+						`/assets/effects/${
+							render.effect.endsWith(`.png`)
+								? render.effect
+								: render.effect + ".png"
+						}`
+					)
 				),
 				bb[0] +
 					(render?.start_x ??
@@ -204,7 +212,8 @@ async function drawBG() {
 				i++;
 			}
 		}
-	});
+	}
+	ctx.globalAlpha = 1
 	const margin = 3;
 	await [...plant_list, ...zombie_list, ...player_list].forEach(async (p) => {
 		// draw entities

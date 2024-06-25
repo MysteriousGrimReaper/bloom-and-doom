@@ -139,63 +139,34 @@ module.exports = {
 		new Action({ begin_turn: true }),
 		new Action({ end_turn: 5 }),
 		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(4, 4),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(4, 5),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(5, 4),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(5, 5),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(6, 4),
-		}),
-
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(6, 5),
-		}),
-		new Action({
-			end_turn: 1,
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(5, 6),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(4, 6),
-		}),
-		new Action({
-			new_plant: `Moonflower`,
-			position: new Movement(6, 6),
-		}),
-		new Action({
 			end_turn: 30,
 		}),
 		new Action({
-			new_plant: `CabbagePult`,
-			position: new Movement(8, 8),
-			direction: new Movement(0, 1),
+			new_plant: `Infinut`,
+			position: new Movement(0, 2),
+		}),
+		new Action({
+			new_plant: `WallNut`,
+			position: new Movement(15, 2),
 		}),
 		new Action({
 			new_zombie: `Conehead`,
-			position: new Movement(8, 15),
+			position: new Movement(15, 4),
 		}),
 		new Action({
 			new_zombie: `Conehead`,
-			position: new Movement(0, 8),
+			position: new Movement(0, 4),
 		}),
 		new Action({
-			end_turn: 3,
+			end_turn: 6,
 		}),
+		new Action({
+			new_plant: `WinterMelon`,
+			position: new Movement(1, 2),
+			direction: new Movement(-1, 0)
+		}),
+		new Action({
+			end_turn: 3
+		})
 	],
 };
