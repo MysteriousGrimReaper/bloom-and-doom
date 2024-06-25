@@ -103,4 +103,107 @@ module.exports = {
 			end_turn: 10,
 		}),
 	],
+	tdq_players: [
+		new Player({
+			name: `arno`,
+			position: new Movement(0, 0),
+			fillStyle: `#2a2`,
+		}),
+		new Player({
+			name: `Bradicus`,
+			position: new Movement(1, 0),
+			fillStyle: `#e44`,
+		}),
+		new Player({
+			name: `Captain Totalitea`,
+			position: new Movement(2, 0),
+			fillStyle: `#77a`,
+		}),
+		new Player({
+			name: `Chilly Billy`,
+			position: new Movement(3, 0),
+			fillStyle: `#aff`,
+		}),
+		new Player({ name: `Cube492`, position: new Movement(4, 0) }),
+		new Player({ name: `Lazarus Alarie`, position: new Movement(5, 0) }),
+		new Player({ name: `Tatters`, position: new Movement(6, 0) }),
+		new Player({ name: `The CAACN`, position: new Movement(7, 0) }),
+		new Player({ name: `CT`, position: new Movement(8, 0) }),
+		new Player({ name: `AMS`, position: new Movement(9, 0) }),
+		new Player({ name: `Lillith Lazuli`, position: new Movement(10, 0) }),
+		new Player({ name: `Azalea`, position: new Movement(11, 0) }),
+		new Player({ name: `Snow SMA`, position: new Movement(12, 0) }),
+		new Player({ name: `Firework Dragon`, position: new Movement(13, 0) }),
+	],
+	tdq_actions: [
+		
+		new Action({ begin_turn: true }),
+		new Action({ end_turn: 5 }),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(4, 4),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(4, 5),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(5, 4),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(5, 5),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(6, 4),
+		}),
+
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(6, 5),
+		}),
+		new Action({
+			end_turn: 1,
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(5, 6),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(4, 6),
+		}),
+		new Action({
+			new_plant: `Moonflower`,
+			position: new Movement(6, 6),
+		}),
+		new Action({
+			end_turn: 10,
+		}),
+		new Action({
+			new_plant: `Starfruit`,
+			position: new Movement(8, 8),
+		}),
+		new Action({
+			new_zombie: `Conehead`,
+			position: new Movement(8, 15),
+		}),
+		new Action({
+			new_zombie: `Conehead`,
+			position: new Movement(0, 8),
+		}),
+		new Action({
+			end_turn: 7,
+		}),
+		new Action({
+			new_plant: `Rotobaga`,
+			position: new Movement(0, 1)
+		}),
+		new Action({
+			end_turn: 1
+		})
+	]
+
 };

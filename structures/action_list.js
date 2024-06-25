@@ -9,6 +9,7 @@ const zalmanac = Object.entries(z).reduce((acc, cv) => {
 	acc[cv[0]] = new cv[1]();
 	return acc;
 }, {});
+const {Tiles} = require("./enums.js")
 module.exports = class ActionList extends Array {
 	constructor(data) {
 		super();
@@ -25,6 +26,34 @@ module.exports = class ActionList extends Array {
 		this.base_sun_gain = 100;
 		this.show_projectiles = true;
 		Object.assign(this, data);
+	}
+	setTiles(tiles_string) {
+		this.board_tiles = tiles_string
+		return this
+	}
+	get tile_map() {
+		if (!this.board_tiles) {
+			this.board_tiles = `.`.repeat(this.board_height * this.board_width)
+		}
+		const parser = {
+			".": Tiles.None,
+			"w": Tiles.Water,
+			"g": Tiles.Gold,
+			"u": Tiles.SliderUp,
+			"d": Tiles.SliderDown,
+			"r": Tiles.SliderRight,
+			"l": Tiles.SliderLeft,
+
+		}
+		const board_map = Array.from({ length: this.board_height }, () => Array(this.board_width).fill(0));
+		for (let j = 0; j < this.board_height; j++) {
+			for (let i = 0; i < this.board_width; i++) {
+				const tileChar = this.board_tiles[j * this.board_width + i] ?? `.`;
+				board_map[j][i] = parser[tileChar];
+			}
+		}
+		
+		return board_map
 	}
 	nearPlants(position, radius) {
 		return this.plant_list.filter((p) => {
@@ -72,6 +101,7 @@ module.exports = class ActionList extends Array {
 			const target_player = this[i].player
 				? this.player_list.find((p) => p.name == this[i].player)
 				: false;
+			const tile_map = this.tile_map
 			if (this[i].actions) {
 				this.splice(i + 1, 0, ...this[i].actions);
 			}
@@ -97,6 +127,14 @@ module.exports = class ActionList extends Array {
 				if (this[i].direction) {
 					this[i].plant.direction = this[i].direction;
 				}
+				if (!(this[i].plant.amphibious || this[i].plant.flying)){
+				if (tile_map[this[i].position.y][this[i].position.x] == Tiles.Water && !this[i].plant.aquatic) {
+					throw Error(`${this[i].plant.name} cannot be planted in water!`)
+				}
+				if (tile_map[this[i].position.y][this[i].position.x] != Tiles.Water && this[i].plant.aquatic) {
+					throw Error(`${this[i].plant.name} cannot be planted on land!`)
+				}}
+				
 				this.plant_list.push(this[i].plant);
 				this.splice(i + 1, 0, this[i].plant.onPlant(this));
 			}

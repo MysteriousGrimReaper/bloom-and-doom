@@ -156,7 +156,6 @@ module.exports = {
 			});
 		}
 		async sprite() {
-			console.log(this.sun_production);
 			return await loadImage(
 				path.join(
 					__dirname,

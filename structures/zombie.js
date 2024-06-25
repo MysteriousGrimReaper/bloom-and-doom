@@ -118,7 +118,6 @@ module.exports = class Zombie {
 		return new Movement(Math.sign(h_direction), Math.sign(v_direction));
 	}
 	onDeath() {
-		console.log(`zombie died`);
 		return new Action({
 			render: { position: this.position, effect: `dead.png` },
 		});
@@ -149,6 +148,7 @@ module.exports = class Zombie {
 			}
 		});
 		return new Action({
+			actions: [new Action({render: {position: original_pos, alpha: 0.4, zombie: this.name}})],
 			zombie_start: original_pos,
 			zombie_end: [this.position.x, this.position.y],
 		});
