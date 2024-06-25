@@ -29,12 +29,12 @@ class Peashooter extends Plant {
 		}
 		return range_output;
 	}
-	shoot(action_list, direction) {
+	shoot(action_list, direction, damage = this.damage, render_options = {}) {
 		const { zombie_list, board_width, board_height } = action_list;
 		const projectile = {
 			x: this.position.x,
 			y: this.position.y,
-			damage: this.damage,
+			damage,
 			direction,
 		};
 		let zombie_colliding = zombie_list.find(
@@ -57,7 +57,7 @@ class Peashooter extends Plant {
 			});
 		}
 		if (!zombie_colliding) {
-			return new Action({ notes: `Peashooter missed` });
+			return new Action({});
 		} else {
 			const z_index = zombie_list.indexOf(zombie_colliding);
 			zombie_list[z_index].damage(projectile.damage);
@@ -74,13 +74,13 @@ class Peashooter extends Plant {
 			});
 		}
 	}
-	pierce(action_list, direction) {
+	pierce(action_list, direction, damage = this.damage, render_options = {}) {
 		const { zombie_list, board_width, board_height } = action_list;
-		let repetitions = 1
+		let repetitions = 1;
 		const projectile = {
 			x: this.position.x,
 			y: this.position.y,
-			damage: this.damage,
+			damage,
 			direction,
 		};
 		let zombie_colliding = zombie_list.find(
@@ -89,13 +89,20 @@ class Peashooter extends Plant {
 		const isOutOfBounds = (x, y) => {
 			return x < 0 || y < 0 || x >= board_width || y >= board_height;
 		};
-		const render_list = []
+		const render_list = [];
 		while (!isOutOfBounds(projectile.x, projectile.y)) {
-			render_list.push(new Action({render: { 
-				position: new Movement(projectile.x, projectile.y), 
-				effect: `${this.projectile_sprite}.png`, alpha: 0.5}}))
-			projectile.x += projectile.direction.x;
-			projectile.y += projectile.direction.y;
+			const render = {
+				position: new Movement(projectile.x, projectile.y),
+				effect: `${this.projectile_sprite}.png`,
+				alpha: 0.5,
+			};
+			Object.assign(render, render_options);
+			render_list.push(
+				new Action({
+					render,
+				})
+			);
+
 			zombie_colliding = zombie_list.find((z) => {
 				return (
 					z.position.x == projectile.x && z.position.y == projectile.y
@@ -105,9 +112,10 @@ class Peashooter extends Plant {
 				const z_index = zombie_list.indexOf(zombie_colliding);
 				zombie_list[z_index].damage(projectile.damage);
 			}
-			repetitions++
+			projectile.x += projectile.direction.x;
+			projectile.y += projectile.direction.y;
+			repetitions++;
 		}
-		render_list.shift()
 		return new Action({
 			actions: render_list,
 		});
@@ -124,6 +132,8 @@ class MelonPult extends Peashooter {
 			damage: 3,
 			cooldown: 5,
 			unlock_timer: 25,
+			projectile_sprite: `melon`,
+			splash_sprite: `melonburst`,
 		});
 		Object.assign(this, data);
 	}
@@ -155,7 +165,7 @@ class MelonPult extends Peashooter {
 			});
 		}
 		if (!zombie_colliding) {
-			return new Action({ notes: `Peashooter missed` });
+			return new Action({});
 		} else {
 			const z_index = zombie_list.indexOf(zombie_colliding);
 			zombie_list[z_index].damage(projectile.damage);
@@ -172,7 +182,25 @@ class MelonPult extends Peashooter {
 				}
 			});
 
-			return new Action({ notes: `Melonpult hit zombie` });
+			return new Action({
+				actions: [
+					new Action({
+						render: {
+							start_pos: this.position,
+							end_pos: zombie_list[z_index].position,
+							direction: projectile.direction,
+							projectile: `${this.projectile_sprite}.png`,
+						},
+					}),
+					new Action({
+						tile_render: {
+							position: zombie_list[z_index].position,
+							effect: `${this.splash_sprite}.png`,
+							size: { x: 3, y: 3 },
+						},
+					}),
+				],
+			});
 		}
 	}
 }
@@ -207,7 +235,7 @@ module.exports = {
 				sun_cost: 350,
 				unlock_timer: 12,
 				projectile_sprite: `rutabaga`,
-				flying: true
+				flying: true,
 			});
 			Object.assign(this, data);
 		}
@@ -228,35 +256,43 @@ module.exports = {
 			Object.assign(this, data);
 		}
 		onEndTurn(action_list) {
-			let opposite_side = this.direction;
+			let opposite_side = new Movement(
+				this.direction.x,
+				this.direction.y
+			);
 			opposite_side.x = -this.direction.x;
 			opposite_side.y = -this.direction.y;
-			this.shoot(action_list, this.direction);
-			this.shoot(action_list, opposite_side);
-			return new Action({ notes: `Split Pea shoots` });
+			const front_shot = this.shoot(action_list, this.direction);
+			const rev_shot = this.shoot(action_list, opposite_side, 2);
+			rev_shot.render.projectile = `twopea.png`;
+			return new Action({ actions: [front_shot, rev_shot] });
 		}
 	},
 	ThreePea: class ThreePea extends Peashooter {
 		constructor(data) {
-			super({ name: `Threepeater`, sun_cost: 325, unlock_timer: 11 });
+			super({ name: `Threepeater`, sun_cost: 300, unlock_timer: 11 });
 			Object.assign(this, data);
 		}
 		onEndTurn(action_list) {
-			let left_side = this.direction;
-			left_side.x = this.direction.y;
-			left_side.y = this.direction.x;
-			let right_side = this.direction;
-			right_side.x = -left_side.x;
-			right_side.y = -left_side.y;
-			this.shoot(action_list, this.direction);
-			this.shoot(action_list, left_side);
-			this.shoot(action_list, right_side);
-			return new Action({ notes: `Threepeater shoots` });
+			let left_side = new Movement(this.direction.y, this.direction.x);
+			let right_side = new Movement(-this.direction.y, -this.direction.x);
+			return new Action({
+				actions: [
+					this.shoot(action_list, this.direction),
+					this.shoot(action_list, left_side),
+					this.shoot(action_list, right_side),
+				],
+			});
 		}
 	},
 	LaserBean: class LaserBean extends Peashooter {
 		constructor(data) {
-			super({ name: `Laser Bean`, sun_cost: 175, unlock_timer: 4, projectile_sprite: `bolt` });
+			super({
+				name: `Laser Bean`,
+				sun_cost: 175,
+				unlock_timer: 4,
+				projectile_sprite: `bolt`,
+			});
 			Object.assign(this, data);
 		}
 		onEndTurn(action_list) {
@@ -265,16 +301,21 @@ module.exports = {
 	},
 	Guacodile: class Guacodile extends Peashooter {
 		constructor(data) {
-			super({ name: `Guacodile`, sun_cost: 125, unlock_timer: 8 });
+			super({
+				name: `Guacodile`,
+				sun_cost: 125,
+				unlock_timer: 8,
+				projectile_sprite: `guacopit`,
+			});
 			Object.assign(this, data);
 		}
 		onDeath(action_list) {
-			this.pierce(action_list, this.direction);
-			this.pierce(action_list, this.direction);
-			this.pierce(action_list, this.direction);
-			this.pierce(action_list, this.direction);
-			this.pierce(action_list, this.direction);
-			return new Action({ notes: `Guacodeath` });
+			const rush = this.pierce(action_list, this.direction, 4, {
+				effect: `guacodilerush.png`,
+				alpha: 1,
+			});
+
+			return rush;
 		}
 	},
 	SnowPea: class SnowPea extends Peashooter {
@@ -322,15 +363,17 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn() {
+		onEndTurn(action_list) {
 			this.mega_cabbage_timer--;
 			if (this.mega_cabbage_timer <= 0) {
+				this.projectile_sprite = `megacabbage`;
 				this.damage = 3;
+				this.mega_cabbage_timer = 3;
 			} else {
+				this.projectile_sprite = `cabbage`;
 				this.damage = 1;
 			}
-			this.mega_cabbage_timer = 3;
-			return new Action({ notes: `Cabbage-pult charges up` });
+			return this.shoot(action_list, this.direction);
 		}
 	},
 	KernelPult: class KernelPult extends Peashooter {
@@ -362,6 +405,8 @@ module.exports = {
 				sun_cost: 600,
 				name: `Winter Melon`,
 				apply_effects: [{ name: `frozen`, time: 1 }],
+				projectile_sprite: `wintermelon`,
+				splash_sprite: `wintermelonburst`,
 			});
 			Object.assign(this, data);
 		}

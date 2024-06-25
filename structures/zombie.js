@@ -148,9 +148,10 @@ module.exports = class Zombie {
 			}
 		});
 		return new Action({
-			actions: [new Action({render: {position: original_pos, alpha: 0.4, zombie: this.name}})],
-			zombie_start: original_pos,
-			zombie_end: [this.position.x, this.position.y],
+			render: {
+				position: new Movement(original_pos[0], original_pos[1]),
+				effect: `zombieoutline.png`,
+			},
 		});
 	}
 };

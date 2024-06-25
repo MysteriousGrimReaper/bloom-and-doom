@@ -136,7 +136,6 @@ module.exports = {
 		new Player({ name: `Firework Dragon`, position: new Movement(13, 0) }),
 	],
 	tdq_actions: [
-		
 		new Action({ begin_turn: true }),
 		new Action({ end_turn: 5 }),
 		new Action({
@@ -180,11 +179,12 @@ module.exports = {
 			position: new Movement(6, 6),
 		}),
 		new Action({
-			end_turn: 10,
+			end_turn: 30,
 		}),
 		new Action({
-			new_plant: `Starfruit`,
+			new_plant: `CabbagePult`,
 			position: new Movement(8, 8),
+			direction: new Movement(0, 1),
 		}),
 		new Action({
 			new_zombie: `Conehead`,
@@ -195,15 +195,7 @@ module.exports = {
 			position: new Movement(0, 8),
 		}),
 		new Action({
-			end_turn: 7,
+			end_turn: 3,
 		}),
-		new Action({
-			new_plant: `Rotobaga`,
-			position: new Movement(0, 1)
-		}),
-		new Action({
-			end_turn: 1
-		})
-	]
-
+	],
 };

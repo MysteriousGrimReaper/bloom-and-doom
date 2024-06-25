@@ -22,16 +22,12 @@ actions.push(...require("./actions.js").qoth_actions);
 
 const actions_tdq = new ActionList({ board_width: 16, board_height: 16 });
 const players_tdq = new PlayerList();
-players_tdq.push(
-	...require("./actions.js").tdq_players
-);
+players_tdq.push(...require("./actions.js").tdq_players);
 actions_tdq.setPlayers(players_tdq);
 // set tile map
-actions_tdq.setTiles(`................wwwwwww`)
+actions_tdq.setTiles(`................wwwwwww`);
 // console.log(actions_tdq.tile_map)
-actions_tdq.push(
-	...require("./actions.js").tdq_actions
-);
+actions_tdq.push(...require("./actions.js").tdq_actions);
 
 games.push(actions);
 games.push(actions_tdq);
@@ -117,7 +113,7 @@ async function drawBG() {
 
 	// Draw bg under players
 	const board_color = "#FFF090";
-	const water_color = "#0000FF30"
+	const water_color = "#0000FF30";
 	ctx.strokeStyle = board_color;
 	ctx.fillStyle = board_color + "30";
 
@@ -127,14 +123,18 @@ async function drawBG() {
 		for (let j in games[game_index].tile_map) {
 			switch (games[game_index].tile_map[i][j]) {
 				case Tiles.Water:
-					ctx.fillStyle = water_color
-					ctx.fillRect(bb[0] + bb[2] * j, bb[1] + bb[3]* i, bb[2], bb[3])
-					break
+					ctx.fillStyle = water_color;
+					ctx.fillRect(
+						bb[0] + bb[2] * j,
+						bb[1] + bb[3] * i,
+						bb[2],
+						bb[3]
+					);
+					break;
 			}
-			
 		}
 	}
-	
+
 	// grid
 	ctx.beginPath();
 	let i = 0;
@@ -216,6 +216,7 @@ async function drawBG() {
 			bb[3] - margin * 2
 		);
 		// direction arrow
+		/*
 		if (p.direction) {
 			ctx.fillStyle = `rgb(255, 255, 255)`;
 			ctx.beginPath();
@@ -258,14 +259,19 @@ async function drawBG() {
 			);
 			ctx.fill();
 		}
+			*/
 		// status
 		if (p.status) {
 			p.status.forEach(async (s) => {
 				let s_image;
 				try {
-					s_image = await loadImage(`./assets/statuses/${s.name}.png`);
+					s_image = await loadImage(
+						`./assets/statuses/${s.name}.png`
+					);
 				} catch {
-					s_image = await loadImage(`./assets/statuses/default_status.png`);
+					s_image = await loadImage(
+						`./assets/statuses/default_status.png`
+					);
 				}
 				ctx.drawImage(
 					s_image,
@@ -386,58 +392,65 @@ async function drawBG() {
 		ctx.fillText(i, 1040, 143 + i * 50);
 	}
 	for (const action of render_images) {
-			const { render } = action;
-			if (render.effect) {
-				ctx.globalAlpha = render.alpha ?? 1
+		const { render } = action;
+		if (render.effect) {
+			ctx.globalAlpha = render.alpha ?? 1;
+			await ctx.drawImage(
+				await loadImage(
+					path.join(
+						__dirname,
+						`/assets/effects/${
+							render.effect.endsWith(`.png`)
+								? render.effect
+								: render.effect + ".png"
+						}`
+					)
+				),
+				bb[0] +
+					(render?.start_x ??
+						render.position.x - ((render?.size?.x ?? 1) - 1) / 2) *
+						bb[2],
+				bb[1] +
+					(render?.start_y ??
+						render.position.y - ((render?.size?.y ?? 1) - 1) / 2) *
+						bb[3],
+				bb[2] * (render?.size?.x ?? 1),
+				bb[3] * (render?.size?.y ?? 1)
+			);
+		} else if (render.projectile) {
+			const projectile_image = await loadImage(
+				path.join(__dirname, `/assets/projectiles/${render.projectile}`)
+			);
+			let draw_x = render.start_pos.x;
+			let draw_y = render.start_pos.y;
+			const repetitions = isNaN(
+				Math.abs((draw_x - render.end_pos.x) / render.direction.x)
+			)
+				? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
+				: Math.abs((draw_x - render.end_pos.x) / render.direction.x);
+			let i = 0;
+			while (i < repetitions) {
+				ctx.globalAlpha = i / repetitions;
 				await ctx.drawImage(
-					await loadImage(
-						path.join(__dirname, `/assets/effects/${render.effect}`)
-					),
+					projectile_image,
 					bb[0] +
 						(render?.start_x ??
-							render.position.x - ((render?.size?.x ?? 1) - 1) / 2) *
-							bb[2],
+							draw_x - ((render?.size?.x ?? 1) - 1) / 2) *
+							bb[2] +
+						margin,
 					bb[1] +
 						(render?.start_y ??
-							render.position.y - ((render?.size?.y ?? 1) - 1) / 2) *
-							bb[3],
-					bb[2] * (render?.size?.x ?? 1),
-					bb[3] * (render?.size?.y ?? 1)
+							draw_y - ((render?.size?.y ?? 1) - 1) / 2) *
+							bb[3] +
+						margin,
+					bb[2] * (render?.size?.x ?? 1) - margin * 2,
+					bb[3] * (render?.size?.y ?? 1) - margin * 2
 				);
-			} else if (render.projectile) {
-				const projectile_image = await loadImage(
-					path.join(__dirname, `/assets/projectiles/${render.projectile}`)
-				);
-				let draw_x = render.start_pos.x;
-				let draw_y = render.start_pos.y;
-				const repetitions = isNaN(
-					Math.abs((draw_x - render.end_pos.x) / render.direction.x)
-				)
-					? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
-					: Math.abs((draw_x - render.end_pos.x) / render.direction.x);
-				let i = 0;
-				while (i < repetitions) {
-					ctx.globalAlpha = i / repetitions;
-					await ctx.drawImage(
-						projectile_image,
-						bb[0] +
-							(render?.start_x ??
-								draw_x - ((render?.size?.x ?? 1) - 1) / 2) *
-								bb[2] +
-							margin,
-						bb[1] +
-							(render?.start_y ??
-								draw_y - ((render?.size?.y ?? 1) - 1) / 2) *
-								bb[3] +
-							margin,
-						bb[2] * (render?.size?.x ?? 1) - margin * 2,
-						bb[3] * (render?.size?.y ?? 1) - margin * 2
-					);
-					draw_x += render.direction.x;
-					draw_y += render.direction.y;
-					i++;
-				}
+				draw_x += render.direction.x;
+				draw_y += render.direction.y;
+				i++;
 			}
+		}
 	}
 }
 drawBG().then(() => {

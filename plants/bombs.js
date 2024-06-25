@@ -74,7 +74,7 @@ module.exports = {
 				}
 			});
 			return new Action({
-				render: {
+				tile_render: {
 					position: this.position,
 					effect: `spudow.png`,
 					size: { x: 3, y: 3 },
