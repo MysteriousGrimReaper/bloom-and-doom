@@ -161,12 +161,16 @@ module.exports = {
 			end_turn: 6,
 		}),
 		new Action({
-			new_plant: `WinterMelon`,
+			new_plant: `Endurian`,
 			position: new Movement(1, 2),
 			direction: new Movement(-1, 0)
 		}),
 		new Action({
-			end_turn: 3
+			new_plant: `Aloe`,
+			position: new Movement(2, 2)
+		}),
+		new Action({
+			end_turn: 20
 		})
 	],
 };

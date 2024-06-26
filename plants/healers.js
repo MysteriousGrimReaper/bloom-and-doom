@@ -1,5 +1,6 @@
 const Plant = require("../structures/plant.js");
 const Action = require("../structures/action.js");
+const Movement = require("../structures/movement.js");
 class Aloe extends Plant {
 	constructor(data) {
 		super({
@@ -12,8 +13,7 @@ class Aloe extends Plant {
 		Object.assign(this, data);
 	}
 	onEndTurn(action_list) {
-		const { plant_list } = action_list;
-		plant_list.forEach((p) => {
+		action_list.nearSquare(this.position, 1, `plants`).forEach((p) => {
 			if (
 				Math.abs(p.position.x - this.position.x) == 1 ||
 				Math.abs(p.position.y - this.position.y) == 1
@@ -23,6 +23,58 @@ class Aloe extends Plant {
 				}
 			}
 		});
+		return new Action({
+			actions:[
+				new Action({
+					tile_render: {
+						position: new Movement(this.position.x, this.position.y+1),
+						effect: `heal.png`
+					}
+				}),
+				new Action({
+					tile_render: {
+						position: new Movement(this.position.x, this.position.y-1),
+						effect: `heal.png`
+					}
+				}),
+				new Action({
+					tile_render: {
+						position: new Movement(this.position.x+1, this.position.y+1),
+						effect: `heal.png`
+					}
+				}),
+				new Action({
+					tile_render: {
+						position: new Movement(this.position.x+1, this.position.y-1),
+						effect: `heal.png`
+					}
+				}),
+				new Action({
+					tile_render: {
+						position: new Movement(this.position.x-1, this.position.y+1),
+						effect: `heal.png`
+					}
+				}),
+				new Action({
+					tile_render: {
+						position: new Movement(this.position.x-1, this.position.y-1),
+						effect: `heal.png`
+					}
+				}),
+				new Action({
+					tile_render: {
+						position: new Movement(this.position.x+1, this.position.y),
+						effect: `heal.png`
+					}
+				}),
+				new Action({
+					tile_render: {
+						position: new Movement(this.position.x-1, this.position.y),
+						effect: `heal.png`
+					}
+				}),
+			]
+		})
 		if (!zombie_colliding) {
 			return new Action({ notes: `Peashooter missed` });
 		} else {

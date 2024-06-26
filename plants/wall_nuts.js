@@ -1,4 +1,5 @@
 const Plant = require("../structures/plant.js");
+const Action = require("../structures/action.js")
 class WallNut extends Plant {
 	constructor(data) {
 		super({
@@ -31,4 +32,21 @@ module.exports = {
 			return this;
 		}
 	},
+	Endurian: class Endurian extends WallNut {
+		constructor(data) {
+			super({
+				name: `Endurian`,
+				sun_cost: 75,
+				health: 8,
+				cooldown: 4
+			})
+			Object.assign(this, data)
+		}
+		onEndTurn(action_list) {
+			action_list.near(this.position, 1, `zombies`).forEach(zombie => {
+				zombie.damage(1)
+			});
+			return new Action({})
+		}
+	}
 };
