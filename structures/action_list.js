@@ -148,7 +148,7 @@ module.exports = class ActionList extends Array {
 						p.x == this[i].attack_zombie.x &&
 						p.y == this[i].attack_zombie.y
 				);
-				this.zombie_list.damage(
+				this.zombie_list[z_index].damage(
 					this[i].attack_zombie.damage,
 					this[i].attack_zombie.damage_type
 				);

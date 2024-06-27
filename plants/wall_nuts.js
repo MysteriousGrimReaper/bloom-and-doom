@@ -17,10 +17,10 @@ module.exports = {
 		constructor(data) {
 			super({
 				name: `Infi-nut`,
-				sun_cost: 75,
+				sun_cost: 150,
 				health: 4,
 				max_health: 4,
-
+				cooldown: 10,
 				hidden: true,
 			});
 			Object.assign(this, data);
