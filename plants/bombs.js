@@ -9,7 +9,7 @@ class PotatoMine extends Plant {
 			sun_cost: 25,
 			recharge_timer: 4,
 			cooldown: 6,
-			explosion_sprite: `spudow`
+			explosion_sprite: `spudow`,
 		});
 		Object.assign(this, data);
 	}
@@ -45,7 +45,10 @@ class PotatoMine extends Plant {
 				}
 			});
 			return new Action({
-				render: { position: this.position, effect: `${this.explosion_sprite}.png` },
+				render: {
+					position: this.position,
+					effect: `${this.explosion_sprite}.png`,
+				},
 			});
 		}
 	}
@@ -54,8 +57,14 @@ module.exports = {
 	PotatoMine,
 	TangleKelp: class TangleKelp extends PotatoMine {
 		constructor(data) {
-			super({name: `Tangle Kelp`, recharge_timer: 0, aquatic: true, explosion_sprite: `kelp`})
-			Object.assign(this, data)
+			super({
+				name: `Tangle Kelp`,
+				recharge_timer: 0,
+				aquatic: true,
+				explosion_sprite: `kelp`,
+				hidden: true,
+			});
+			Object.assign(this, data);
 		}
 	},
 	CherryBomb: class CherryBomb extends Plant {
@@ -64,8 +73,9 @@ module.exports = {
 				name: `Cherry Bomb`,
 				sun_cost: 150,
 				health: 0,
-				unlock_timer: 18,
+
 				cooldown: 8,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -95,8 +105,9 @@ module.exports = {
 				name: `Jalapeno`,
 				sun_cost: 125,
 				health: 0,
-				unlock_timer: 18,
+
 				cooldown: 8,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -124,8 +135,9 @@ module.exports = {
 				name: `Chilly Pepper`,
 				sun_cost: 175,
 				health: 0,
-				unlock_timer: 18,
+
 				cooldown: 8,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}

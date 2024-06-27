@@ -9,7 +9,7 @@ const zalmanac = Object.entries(z).reduce((acc, cv) => {
 	acc[cv[0]] = new cv[1]();
 	return acc;
 }, {});
-const {Tiles} = require("./enums.js")
+const { Tiles } = require("./enums.js");
 module.exports = class ActionList extends Array {
 	constructor(data) {
 		super();
@@ -27,46 +27,52 @@ module.exports = class ActionList extends Array {
 		this.show_projectiles = true;
 		Object.assign(this, data);
 	}
+	setActions(action_list) {
+		this.push(...action_list);
+		return this;
+	}
 	setTiles(tiles_string) {
-		this.board_tiles = tiles_string
-		return this
+		this.board_tiles = tiles_string;
+		return this;
 	}
 	get tile_map() {
 		if (!this.board_tiles) {
-			this.board_tiles = `.`.repeat(this.board_height * this.board_width)
+			this.board_tiles = `.`.repeat(this.board_height * this.board_width);
 		}
 		const parser = {
 			".": Tiles.None,
-			"w": Tiles.Water,
-			"g": Tiles.Gold,
-			"u": Tiles.SliderUp,
-			"d": Tiles.SliderDown,
-			"r": Tiles.SliderRight,
-			"l": Tiles.SliderLeft,
-
-		}
-		const board_map = Array.from({ length: this.board_height }, () => Array(this.board_width).fill(0));
+			w: Tiles.Water,
+			g: Tiles.Gold,
+			u: Tiles.SliderUp,
+			d: Tiles.SliderDown,
+			r: Tiles.SliderRight,
+			l: Tiles.SliderLeft,
+		};
+		const board_map = Array.from({ length: this.board_height }, () =>
+			Array(this.board_width).fill(0)
+		);
 		for (let j = 0; j < this.board_height; j++) {
 			for (let i = 0; i < this.board_width; i++) {
-				const tileChar = this.board_tiles[j * this.board_width + i] ?? `.`;
+				const tileChar =
+					this.board_tiles[j * this.board_width + i] ?? `.`;
 				board_map[j][i] = parser[tileChar];
 			}
 		}
-		
-		return board_map
+
+		return board_map;
 	}
 	near(position, radius, list = `plants`) {
-		let list_to_use = this.plant_list
-		switch(list) {
+		let list_to_use = this.plant_list;
+		switch (list) {
 			case `plants`:
-				list_to_use = this.plant_list
-				break
+				list_to_use = this.plant_list;
+				break;
 			case `zombies`:
-				list_to_use = this.zombie_list
-				break
+				list_to_use = this.zombie_list;
+				break;
 			case `players`:
-				list_to_use = this.player_list
-				break
+				list_to_use = this.player_list;
+				break;
 		}
 		return list_to_use.filter((p) => {
 			const cost =
@@ -76,20 +82,19 @@ module.exports = class ActionList extends Array {
 				return true;
 			}
 		});
-		
 	}
 	nearSquare(position, radius, list = `plants`) {
-		let list_to_use = this.plant_list
-		switch(list) {
+		let list_to_use = this.plant_list;
+		switch (list) {
 			case `plants`:
-				list_to_use = this.plant_list
-				break
+				list_to_use = this.plant_list;
+				break;
 			case `zombies`:
-				list_to_use = this.zombie_list
-				break
+				list_to_use = this.zombie_list;
+				break;
 			case `players`:
-				list_to_use = this.player_list
-				break
+				list_to_use = this.player_list;
+				break;
 		}
 
 		return list_to_use.filter((p) => {
@@ -127,9 +132,43 @@ module.exports = class ActionList extends Array {
 			const target_player = this[i].player
 				? this.player_list.find((p) => p.name == this[i].player)
 				: false;
-			const tile_map = this.tile_map
+			const tile_map = this.tile_map;
 			if (this[i].actions) {
 				this.splice(i + 1, 0, ...this[i].actions);
+			}
+			if (this[i].dig) {
+				const plant_index = this.plant_list.findIndex(
+					(p) => p.x == this[i].dig.x && p.y == this[i].dig.y
+				);
+				this.plant_list.splice(plant_index, 1);
+			}
+			if (this[i].set_tiles) {
+				this.setTiles(this[i].set_tiles);
+			}
+			if (this[i].set_players) {
+				this.setPlayers(this[i].set_players);
+			}
+			if (this[i].show_seed) {
+				try {
+					this.seed_slot_list[this[i].show_seed].hidden = false;
+				} catch (error) {
+					console.log(error);
+					console.log(Object.keys(almanac));
+					throw Error(
+						`${this[i].show_seed} is not a plant. See above for list of accepted plants.`
+					);
+				}
+			}
+			if (this[i].hide_seed) {
+				try {
+					this.seed_slot_list[this[i].hide_seed].hidden = true;
+				} catch (error) {
+					console.log(error);
+					console.log(Object.keys(almanac));
+					throw Error(
+						`${this[i].hide_seed} is not a plant. See above for list of accepted plants.`
+					);
+				}
 			}
 			if (this[i].new_plant) {
 				try {
@@ -153,14 +192,27 @@ module.exports = class ActionList extends Array {
 				if (this[i].direction) {
 					this[i].plant.direction = this[i].direction;
 				}
-				if (!(this[i].plant.amphibious || this[i].plant.flying)){
-				if (tile_map[this[i].position.y][this[i].position.x] == Tiles.Water && !this[i].plant.aquatic) {
-					throw Error(`${this[i].plant.name} cannot be planted in water!`)
+				if (!(this[i].plant.amphibious || this[i].plant.flying)) {
+					if (
+						tile_map[this[i].position.y][this[i].position.x] ==
+							Tiles.Water &&
+						!this[i].plant.aquatic
+					) {
+						throw Error(
+							`${this[i].plant.name} cannot be planted in water!`
+						);
+					}
+					if (
+						tile_map[this[i].position.y][this[i].position.x] !=
+							Tiles.Water &&
+						this[i].plant.aquatic
+					) {
+						throw Error(
+							`${this[i].plant.name} cannot be planted on land!`
+						);
+					}
 				}
-				if (tile_map[this[i].position.y][this[i].position.x] != Tiles.Water && this[i].plant.aquatic) {
-					throw Error(`${this[i].plant.name} cannot be planted on land!`)
-				}}
-				
+
 				this.plant_list.push(this[i].plant);
 				this.splice(i + 1, 0, this[i].plant.onPlant(this));
 			}

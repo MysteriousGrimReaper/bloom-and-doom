@@ -6,7 +6,7 @@ module.exports = {
 		constructor(data) {
 			super({
 				name: `Basic`,
-				health: 3,
+				health: 4,
 			});
 			Object.assign(this, data);
 		}
@@ -15,7 +15,7 @@ module.exports = {
 		constructor(data) {
 			super({
 				name: `Conehead`,
-				health: 6,
+				health: 8,
 			});
 			Object.assign(this, data);
 		}
@@ -24,8 +24,18 @@ module.exports = {
 		constructor(data) {
 			super({
 				name: `Buckethead`,
-				health: 12,
+				health: 15,
 			});
+			Object.assign(this, data);
+		}
+	},
+	Imp: class Imp extends Zombie {
+		constructor(data) {
+			super({
+				name: `Imp`,
+				health: 2,
+			});
+			this.pathfind_ai = this.diagPathfind;
 			Object.assign(this, data);
 		}
 	},

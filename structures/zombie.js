@@ -38,7 +38,7 @@ module.exports = class Zombie {
 		}
 		return true;
 	}
-	damage(hp) {
+	damage(hp, type = null) {
 		this.health -= hp;
 		return this;
 	}

@@ -7,8 +7,9 @@ class Aloe extends Plant {
 			name: `Aloe`,
 			sun_cost: 100,
 			health: 1,
-			unlock_timer: 5,
+
 			cooldown: 2,
+			hidden: true,
 		});
 		Object.assign(this, data);
 	}
@@ -24,57 +25,81 @@ class Aloe extends Plant {
 			}
 		});
 		return new Action({
-			actions:[
+			actions: [
 				new Action({
 					tile_render: {
-						position: new Movement(this.position.x, this.position.y+1),
-						effect: `heal.png`
-					}
+						position: new Movement(
+							this.position.x,
+							this.position.y + 1
+						),
+						effect: `heal.png`,
+					},
 				}),
 				new Action({
 					tile_render: {
-						position: new Movement(this.position.x, this.position.y-1),
-						effect: `heal.png`
-					}
+						position: new Movement(
+							this.position.x,
+							this.position.y - 1
+						),
+						effect: `heal.png`,
+					},
 				}),
 				new Action({
 					tile_render: {
-						position: new Movement(this.position.x+1, this.position.y+1),
-						effect: `heal.png`
-					}
+						position: new Movement(
+							this.position.x + 1,
+							this.position.y + 1
+						),
+						effect: `heal.png`,
+					},
 				}),
 				new Action({
 					tile_render: {
-						position: new Movement(this.position.x+1, this.position.y-1),
-						effect: `heal.png`
-					}
+						position: new Movement(
+							this.position.x + 1,
+							this.position.y - 1
+						),
+						effect: `heal.png`,
+					},
 				}),
 				new Action({
 					tile_render: {
-						position: new Movement(this.position.x-1, this.position.y+1),
-						effect: `heal.png`
-					}
+						position: new Movement(
+							this.position.x - 1,
+							this.position.y + 1
+						),
+						effect: `heal.png`,
+					},
 				}),
 				new Action({
 					tile_render: {
-						position: new Movement(this.position.x-1, this.position.y-1),
-						effect: `heal.png`
-					}
+						position: new Movement(
+							this.position.x - 1,
+							this.position.y - 1
+						),
+						effect: `heal.png`,
+					},
 				}),
 				new Action({
 					tile_render: {
-						position: new Movement(this.position.x+1, this.position.y),
-						effect: `heal.png`
-					}
+						position: new Movement(
+							this.position.x + 1,
+							this.position.y
+						),
+						effect: `heal.png`,
+					},
 				}),
 				new Action({
 					tile_render: {
-						position: new Movement(this.position.x-1, this.position.y),
-						effect: `heal.png`
-					}
+						position: new Movement(
+							this.position.x - 1,
+							this.position.y
+						),
+						effect: `heal.png`,
+					},
 				}),
-			]
-		})
+			],
+		});
 		if (!zombie_colliding) {
 			return new Action({ notes: `Peashooter missed` });
 		} else {

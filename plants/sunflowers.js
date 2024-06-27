@@ -28,8 +28,9 @@ module.exports = {
 				name: `Twin Sunflower`,
 				sun_cost: 125,
 				sun_production: 50,
-				unlock_timer: 10,
+
 				cooldown: 3,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -40,9 +41,10 @@ module.exports = {
 				name: `Primal Sunflower`,
 				sun_cost: 125,
 				sun_production: 175,
-				unlock_timer: 20,
+
 				cooldown: 3,
 				sun_timer: 3,
+				hidden: true,
 			});
 
 			Object.assign(this, data);
@@ -92,6 +94,7 @@ module.exports = {
 				sun_production: 15,
 				max_sun_production: 120,
 				cooldown: 0,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}

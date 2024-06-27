@@ -19,4 +19,16 @@ module.exports = class Movement {
 		}
 		return this;
 	}
+	vAdd(movement) {
+		const m = new Movement(this.x, this.y);
+		const { x, y, relative } = movement;
+		if (relative) {
+			m.x += x;
+			m.y += y;
+		} else {
+			m.x = x;
+			m.y = y;
+		}
+		return m;
+	}
 };

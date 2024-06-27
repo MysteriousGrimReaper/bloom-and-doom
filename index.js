@@ -1,4 +1,4 @@
-const game_index = 1;
+const game_index = "tdq";
 
 const Action = require("./structures/action.js");
 const ActionList = require("./structures/action_list.js");
@@ -12,37 +12,18 @@ const path = require("path");
 const almanac = require("./almanac.js");
 const zalmanac = require("./zalmanac.js");
 const Zombie = require("./structures/zombie.js");
-const games = [];
-const actions = new ActionList({ board_width: 16, board_height: 16 });
-const players = new PlayerList();
-players.push(...require("./actions.js").qoth_players);
-actions.setPlayers(players);
-
-actions.push(...require("./actions.js").qoth_actions);
-
-const actions_tdq = new ActionList({ board_width: 16, board_height: 16 });
-const players_tdq = new PlayerList();
-players_tdq.push(...require("./actions.js").tdq_players);
-actions_tdq.setPlayers(players_tdq);
-// set tile map
-actions_tdq.setTiles(`................wwwwwww`);
-// console.log(actions_tdq.tile_map)
-actions_tdq.push(...require("./actions.js").tdq_actions);
-
-games.push(actions);
-games.push(actions_tdq);
-
-const valid = games[game_index].validate();
+const games = require("./actions.js");
+const actions = new ActionList()
+	.setActions(games[game_index].actions)
+	.setPlayers(games[game_index].players);
+console.log(actions);
+const valid = actions.validate();
 if (valid) {
 	console.log("\x1b[32m", "All set! Find the game log in game.json.");
-	fs.writeFile(
-		`game.json`,
-		JSON.stringify(games[game_index].toJSON()),
-		(err) => {
-			if (err) throw err;
-			console.log(`The file has been saved!`);
-		}
-	);
+	fs.writeFile(`game.json`, JSON.stringify(actions.toJSON()), (err) => {
+		if (err) throw err;
+		console.log(`The file has been saved!`);
+	});
 }
 
 console.log(`Done`);
@@ -63,15 +44,15 @@ const {
 	board_width,
 	seed_slot_list,
 	show_projectiles,
-} = games[game_index];
-let last_turn_index = games[game_index].length;
-while (!games[game_index][last_turn_index]?.end_turn && last_turn_index >= 0) {
+} = actions;
+let last_turn_index = actions.length;
+while (!actions[last_turn_index]?.end_turn && last_turn_index >= 0) {
 	last_turn_index--;
 }
-const render_images = games[game_index]
+const render_images = actions
 	.slice(last_turn_index)
 	.filter((action) => action.render);
-const tile_render_images = games[game_index]
+const tile_render_images = actions
 	.slice(last_turn_index)
 	.filter((action) => action.tile_render);
 async function drawBG() {
@@ -119,9 +100,9 @@ async function drawBG() {
 
 	// draw tiles
 	ctx.fillRect(bb[0], bb[1], bb[2] * board_width, bb[3] * board_height);
-	for (let i in games[game_index].tile_map) {
-		for (let j in games[game_index].tile_map) {
-			switch (games[game_index].tile_map[i][j]) {
+	for (let i in actions.tile_map) {
+		for (let j in actions.tile_map) {
+			switch (actions.tile_map[i][j]) {
 				case Tiles.Water:
 					ctx.fillStyle = water_color;
 					ctx.fillRect(
@@ -213,7 +194,7 @@ async function drawBG() {
 			}
 		}
 	}
-	ctx.globalAlpha = 1
+	ctx.globalAlpha = 1;
 	const margin = 3;
 	await [...plant_list, ...zombie_list, ...player_list].forEach(async (p) => {
 		// draw entities
@@ -340,7 +321,11 @@ async function drawBG() {
 			30
 		);
 	}
-	const plant_keys = Object.keys(seed_slot_list).sort();
+	const all_plant_keys = Object.keys(seed_slot_list).sort();
+	const plant_keys = all_plant_keys.filter((s) => {
+		const plant = seed_slot_list[s];
+		return !plant.hidden;
+	});
 	for (let p in plant_keys) {
 		const temp_plant = seed_slot_list[plant_keys[p]];
 		const is_recharged = !(

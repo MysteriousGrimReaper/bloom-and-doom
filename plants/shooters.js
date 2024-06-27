@@ -131,9 +131,10 @@ class MelonPult extends Peashooter {
 			sun_cost: 350,
 			damage: 3,
 			cooldown: 5,
-			unlock_timer: 25,
+
 			projectile_sprite: `melon`,
 			splash_sprite: `melonburst`,
+			hidden: true,
 		});
 		Object.assign(this, data);
 	}
@@ -211,8 +212,9 @@ module.exports = {
 			super({
 				name: `Starfruit`,
 				sun_cost: 400,
-				unlock_timer: 12,
+
 				projectile_sprite: `star`,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -233,9 +235,10 @@ module.exports = {
 			super({
 				name: `Rotobaga`,
 				sun_cost: 350,
-				unlock_timer: 12,
+
 				projectile_sprite: `rutabaga`,
 				flying: true,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -252,7 +255,12 @@ module.exports = {
 	},
 	SplitPea: class SplitPea extends Peashooter {
 		constructor(data) {
-			super({ name: `Split Pea`, sun_cost: 300, unlock_timer: 9 });
+			super({
+				name: `Split Pea`,
+				sun_cost: 300,
+
+				hidden: true,
+			});
 			Object.assign(this, data);
 		}
 		onEndTurn(action_list) {
@@ -270,7 +278,12 @@ module.exports = {
 	},
 	ThreePea: class ThreePea extends Peashooter {
 		constructor(data) {
-			super({ name: `Threepeater`, sun_cost: 300, unlock_timer: 11 });
+			super({
+				name: `Threepeater`,
+				sun_cost: 300,
+
+				hidden: true,
+			});
 			Object.assign(this, data);
 		}
 		onEndTurn(action_list) {
@@ -290,8 +303,9 @@ module.exports = {
 			super({
 				name: `Laser Bean`,
 				sun_cost: 175,
-				unlock_timer: 4,
+
 				projectile_sprite: `bolt`,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -304,8 +318,9 @@ module.exports = {
 			super({
 				name: `Guacodile`,
 				sun_cost: 125,
-				unlock_timer: 8,
+
 				projectile_sprite: `guacopit`,
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -325,7 +340,21 @@ module.exports = {
 				sun_cost: 175,
 				apply_effects: [{ name: `frozen`, time: 1 }],
 				cooldown: 4,
-				unlock_timer: 10,
+
+				hidden: true,
+			});
+			Object.assign(this, data);
+		}
+	},
+	LilyOfAlchemy: class LilyOfAlchemy extends Peashooter {
+		constructor(data) {
+			super({
+				name: `Lily of Alchemy`,
+				sun_cost: 175,
+				apply_effects: [{ name: `poison`, time: 1 }],
+				cooldown: 4,
+
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -338,6 +367,7 @@ module.exports = {
 				damage: 2,
 				damage_type: `fire`,
 				hidden: true,
+				hidden: true,
 			});
 		}
 	},
@@ -345,8 +375,9 @@ module.exports = {
 		constructor(data) {
 			super({
 				name: `Goo Peashooter`,
-				sun_cost: 175,
+				sun_cost: 275,
 				apply_effects: [{ name: `poison`, time: 3 }],
+				hidden: true,
 				hidden: true,
 			});
 			Object.assign(this, data);
@@ -359,7 +390,8 @@ module.exports = {
 				sun_cost: 100,
 				mega_cabbage_timer: 3,
 				cooldown: 5,
-				unlock_timer: 25,
+
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
@@ -383,7 +415,8 @@ module.exports = {
 				sun_cost: 100,
 				butter_timer: 3,
 				cooldown: 5,
-				unlock_timer: 25,
+
+				hidden: true,
 			});
 			Object.assign(this, data);
 		}
