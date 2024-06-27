@@ -142,6 +142,17 @@ module.exports = class ActionList extends Array {
 				);
 				this.plant_list.splice(plant_index, 1);
 			}
+			if (this[i].attack_zombie) {
+				const z_index = this.zombie_list.findIndex(
+					(p) =>
+						p.x == this[i].attack_zombie.x &&
+						p.y == this[i].attack_zombie.y
+				);
+				this.zombie_list.damage(
+					this[i].attack_zombie.damage,
+					this[i].attack_zombie.damage_type
+				);
+			}
 			if (this[i].set_tiles) {
 				this.setTiles(this[i].set_tiles);
 			}

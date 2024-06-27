@@ -155,6 +155,7 @@ module.exports = {
 				name: `The CAACN`,
 				position: new Movement(7, 0),
 				fillStyle: `#94918c`,
+				health: 8,
 			}),
 			new Player({
 				name: `CT`,
