@@ -48,13 +48,31 @@ module.exports = class ActionList extends Array {
 			r: Tiles.SliderRight,
 			l: Tiles.SliderLeft,
 		};
+		const lilypad_tiles = this.plant_list
+			.filter((p) => {
+				return p.name == `Lily Pad`;
+			})
+			.map((p) => {
+				return [p.position.x, p.position.y];
+			});
+		const isLilypadTile = (pos_array) => {
+			return (
+				lilypad_tiles.find(
+					(plant) =>
+						plant[0] == pos_array[0] && plant[1] == pos_array[1]
+				) != undefined
+			);
+		};
 		const board_map = Array.from({ length: this.board_height }, () =>
 			Array(this.board_width).fill(0)
 		);
 		for (let j = 0; j < this.board_height; j++) {
 			for (let i = 0; i < this.board_width; i++) {
-				const tileChar =
+				let tileChar =
 					this.board_tiles[j * this.board_width + i] ?? `.`;
+				if (isLilypadTile([i, j])) {
+					tileChar = `.`;
+				}
 				board_map[j][i] = parser[tileChar];
 			}
 		}
@@ -138,9 +156,31 @@ module.exports = class ActionList extends Array {
 			}
 			if (this[i].dig) {
 				const plant_index = this.plant_list.findIndex(
-					(p) => p.x == this[i].dig.x && p.y == this[i].dig.y
+					(p) =>
+						p.position.x == this[i].dig.x &&
+						p.position.y == this[i].dig.y
 				);
 				this.plant_list.splice(plant_index, 1);
+			}
+			if (this[i].mutate) {
+				let j = 0;
+				while (j < this.plant_list.length) {
+					const p = this.plant_list[j];
+					if (p.name == this[i].mutate[0]) {
+						const old_plant = this.plant_list.splice(j, 1)[0];
+						const new_plant = new a[this[i].mutate[1]]();
+						new_plant.position = old_plant.position;
+						if (old_plant.direction) {
+							new_plant.direction = old_plant.direction;
+						}
+						this.plant_list.push(new_plant);
+						const plant_action = new_plant.onPlant(this);
+						plant_action.sun_cost = 0;
+						this.splice(i + 1, 0, plant_action);
+					} else {
+						j++;
+					}
+				}
 			}
 			if (this[i].attack_zombie) {
 				const z_index = this.zombie_list.findIndex(
@@ -286,6 +326,12 @@ module.exports = class ActionList extends Array {
 					this.seed_slot_list[p].unlock_timer--;
 					this.seed_slot_list[p].cooldown_timer--;
 				}
+				for (let p of this.player_list) {
+					p.reset_act();
+				}
+			}
+			if (this[i].act) {
+				this.player_list.find((p) => p.name == this[i].act).act();
 			}
 			sun += (this[i].sun_gain ?? 0) - (this[i].sun_cost ?? 0);
 			if (sun < 0) {

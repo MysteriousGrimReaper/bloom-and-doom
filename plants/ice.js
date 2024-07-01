@@ -32,7 +32,7 @@ module.exports = {
 			Object.assign(this, data);
 		}
 		onDeath(action_list) {
-			console.log(action_list.nearSquare(this.position, 4, `zombies`));
+			// console.log(action_list.nearSquare(this.position, 4, `zombies`));
 			action_list
 				.nearSquare(this.position, 4, `zombies`)
 				.forEach((z) => z.status.push({ name: `frozen`, time: 5 }));

@@ -16,7 +16,7 @@ const games = require("./actions.js");
 const actions = new ActionList()
 	.setActions(games[game_index].actions)
 	.setPlayers(games[game_index].players);
-console.log(actions);
+// console.log(actions);
 const valid = actions.validate();
 if (valid) {
 	console.log("\x1b[32m", "All set! Find the game log in game.json.");
@@ -206,7 +206,7 @@ async function drawBG() {
 			bb[3] - margin * 2
 		);
 		// direction arrow
-		/*
+
 		if (p.direction) {
 			ctx.fillStyle = `rgb(255, 255, 255)`;
 			ctx.beginPath();
@@ -220,20 +220,23 @@ async function drawBG() {
 				Math.sqrt(
 					Math.pow(p.direction.x, 2) + Math.pow(p.direction.y, 2)
 				);
-			const angle =
-				Math.atan(py_normal / px_normal) +
-				(px_normal < 0 ? Math.PI / 2 : 0);
+			console.log(py_normal);
+			let angle = Math.atan(py_normal / px_normal);
+			if (py_normal == 0) {
+				console.log(`py_normal is 0`);
+				angle = px_normal < 0 ? Math.PI : 0;
+			}
 			const left_angle = angle - Math.PI / 8;
 			const right_angle = angle + Math.PI / 8;
 			const triangle_x = [
 				px_normal * 25,
-				Math.cos(left_angle) * 15,
-				Math.cos(right_angle) * 15,
+				Math.cos(left_angle) * 20,
+				Math.cos(right_angle) * 20,
 			];
 			const triangle_y = [
 				py_normal * 25,
-				Math.sin(left_angle) * 15,
-				Math.sin(right_angle) * 15,
+				Math.sin(left_angle) * 20,
+				Math.sin(right_angle) * 20,
 			];
 			ctx.moveTo(
 				p.position.x * bb[2] + bb[0] + bb[2] / 2 + triangle_x[0],
@@ -249,7 +252,7 @@ async function drawBG() {
 			);
 			ctx.fill();
 		}
-			*/
+
 		// status
 		if (p.status) {
 			p.status.forEach(async (s) => {
@@ -306,10 +309,11 @@ async function drawBG() {
 	ctx.fillText(`Gardeners`, 373 + g_offset + gardener_label_offset, 105);
 	ctx.fillText(`Seeds`, g_offset - 100, 105);
 	ctx.font = "30px Archivo";
+	// player names
 	for (let p in player_list) {
 		ctx.fillStyle = player_list[p].fillStyle ?? `#ffffff`;
 		ctx.fillText(
-			player_list[p].name,
+			player_list[p].displayName,
 			373 + g_offset + gardener_label_offset,
 			155 + 40 * p
 		);
@@ -417,11 +421,14 @@ async function drawBG() {
 			);
 			let draw_x = render.start_pos.x;
 			let draw_y = render.start_pos.y;
-			const repetitions = isNaN(
-				Math.abs((draw_x - render.end_pos.x) / render.direction.x)
-			)
-				? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
-				: Math.abs((draw_x - render.end_pos.x) / render.direction.x);
+			const repetitions = Math.min(
+				16,
+				isNaN(
+					Math.abs((draw_x - render.end_pos.x) / render.direction.x)
+				)
+					? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
+					: Math.abs((draw_x - render.end_pos.x) / render.direction.x)
+			);
 			let i = 0;
 			while (i < repetitions) {
 				ctx.globalAlpha = i / repetitions;

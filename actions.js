@@ -3,6 +3,60 @@ const ActionList = require("./structures/action_list.js");
 const Movement = require("./structures/movement.js");
 const Player = require("./structures/player.js");
 const PlayerList = require("./structures/player_list.js");
+function spawnZombies(positions) {
+	return new Action({
+		actions: positions.map((p) => {
+			// console.log(p[0]);
+			return new Action({
+				new_zombie: p[0],
+				position: new Movement(p[1], p[2]),
+			});
+		}),
+	});
+}
+function spawnPlants(positions) {
+	return new Action({
+		actions: positions.map((p) => {
+			const action = new Action({
+				new_plant: p[0],
+				position: new Movement(p[1], p[2]),
+			});
+			if (p[3] != undefined) {
+				action.direction = new Movement(p[3], p[4]);
+			}
+			if (p[5] != undefined) {
+				action.act = p[5];
+			}
+			return action;
+		}),
+	});
+}
+function movePlayers(movements) {
+	return new Action({
+		actions: movements.map((p) => {
+			return new Action({
+				player: p[0],
+				act: p[0],
+				movement: new Movement(p[1], p[2], p[3] ?? true),
+			});
+		}),
+	});
+}
+function hasMoved(players) {
+	return new Action({
+		actions: players.map((p) => {
+			return new Action({
+				act: p,
+			});
+		}),
+	});
+}
+const end_turn = () => {
+	return new Action({
+		end_turn: true,
+	});
+};
+console.log();
 module.exports = {
 	qoth: {
 		players: [
@@ -263,6 +317,120 @@ module.exports = {
 				new_plant: `TwinSunflower`,
 				position: new Movement(8, 0),
 			}),
+			new Action({
+				end_turn: true,
+			}),
+			new Action({
+				new_plant: `Sunflower`,
+				position: new Movement(14, 0),
+			}),
+			new Action({
+				new_plant: `Sunflower`,
+				position: new Movement(1, 0),
+			}),
+			new Action({
+				new_plant: `Sunflower`,
+				position: new Movement(2, 1),
+			}),
+			new Action({
+				new_plant: `Sunflower`,
+				position: new Movement(3, 1),
+			}),
+			new Action({
+				player: `The CAACN`,
+				movement: new Movement(0, 1),
+			}),
+			new Action({
+				new_plant: `Sunflower`,
+				position: new Movement(5, 0),
+			}),
+			new Action({
+				player: `Lillith Lazuli`,
+				movement: new Movement(0, 3),
+			}),
+			new Action({
+				end_turn: 1,
+			}),
+			spawnZombies([
+				[`Basic`, 0, 10],
+				[`Basic`, 1, 15],
+				[`Basic`, 8, 15],
+				[`Basic`, 14, 15],
+			]),
+			spawnPlants([
+				[`Peashooter`, 11, 4, 0, 1],
+				[`Sunflower`, 1, 1],
+				[`Sunflower`, 12, 0],
+				[`WallNut`, 11, 5],
+			]),
+			new Action({
+				player: `arno`,
+				movement: new Movement(1, 2, false),
+			}),
+			new Action({
+				player: `Lillith Lazuli`,
+				movement: new Movement(10, 4, false),
+			}),
+			new Action({
+				player: `AMS`,
+				movement: new Movement(-1, 1),
+			}),
+			new Action({
+				player: `Tatters`,
+				movement: new Movement(0, 1),
+			}),
+			new Action({
+				player: `CT`,
+				movement: new Movement(7, 1, false),
+			}),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([
+				[`Lillith Lazuli`, 9, 4, false],
+				[`CT`, 6, 2, false],
+			]),
+			spawnPlants([[`Peashooter`, 8, 4, 0, 1]]),
+			hasMoved([`Lillith Lazuli`, `arno`, `The CAACN`, `CT`]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([
+				[`CT`, 5, 3, false],
+				[`Bradicus`, 14, 1, false],
+				[`AMS`, 1, 0],
+				[`The CAACN`, 0, 0],
+				[`arno`, 0, 3, false],
+			]),
+			spawnPlants([
+				[`TwinSunflower`, 15, 0, , , `Bradicus`],
+				[`Sunflower`, 4, 0, , , `Cube492`],
+				[`IcebergLettuce`, 9, 5, , , `Lillith Lazuli`],
+			]),
+			new Action({
+				show_seed: `CherryBomb`,
+			}),
+			new Action({
+				end_turn: true,
+			}),
+			spawnZombies([
+				[`Basic`, 2, 15],
+				[`Basic`, 15, 14],
+			]),
+			new Action({
+				set_tiles: `................................................................w..............www............wwwww..........wwwwwwww......wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
+			}),
+			movePlayers([
+				[`AMS`, 1, 1],
+				[`Cube492`, 0, 1],
+			]),
+			spawnPlants([
+				[`Peashooter`, 14, 2, 0, 1, `Bradicus`],
+				[`Sunflower`, 4, 1, , , `Cube492`],
+			]),
+			new Action({
+				show_seed: `Lilypad`,
+			}),
 		],
 	},
 	test: {
@@ -305,6 +473,339 @@ module.exports = {
 			new Action({
 				end_turn: 3,
 			}),
+		],
+	},
+	m: {
+		players: [
+			new Player({
+				name: `bopduwopyop`,
+				position: new Movement(15, 15),
+			}),
+		],
+		actions: [
+			new Action({
+				begin_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			spawnPlants([[`IcebergLettuce`, 13, 14]]),
+			new Action({
+				show_seed: `Rotobaga`,
+			}),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnPlants([[`PotatoMine`, 11, 12]]),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			spawnPlants([
+				[`Sunflower`, 9, 9],
+				[`Sunflower`, 10, 9],
+				[`Rotobaga`, 9, 10],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnZombies([
+				[`Basic`, 0, 14],
+				[`Basic`, 0, 2],
+				[`Basic`, 4, 0],
+				[`Basic`, 15, 14],
+				[`Basic`, 0, 15],
+				[`Basic`, 5, 15],
+			]),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			spawnPlants([
+				[`IcebergLettuce`, 8, 10],
+				[`Sunflower`, 8, 9],
+				[`Sunflower`, 9, 8],
+				[`Sunflower`, 10, 8],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			spawnPlants([
+				[`Sunflower`, 7, 9],
+				[`Sunflower`, 9, 7],
+				[`WallNut`, 7, 7],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			new Action({
+				show_seed: `HomingThistle`,
+			}),
+			spawnPlants([[`Rotobaga`, 8, 7]]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnPlants([
+				[`Sunflower`, 8, 8],
+				[`Sunflower`, 6, 8],
+				[`Peashooter`, 6, 9, 0, 1],
+			]),
+			movePlayers([[`bopduwopyop`, -1, 0]]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, -1, 0]]),
+			spawnPlants([
+				[`Peashooter`, 5, 9, 0, -1],
+				[`HomingThistle`, 7, 8],
+			]),
+
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 0, -1]]),
+			spawnPlants([
+				[`HomingThistle`, 5, 8],
+				[`IcebergLettuce`, 7, 6],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 5, 8, false]]),
+			spawnPlants([
+				[`Peashooter`, 4, 8, 0, 1],
+				[`Sunflower`, 4, 7],
+				[`Sunflower`, 5, 7],
+				[`Sunflower`, 6, 7],
+				[`Sunflower`, 4, 9],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 5, 9, false]]),
+			spawnPlants([
+				[`WallNut`, 4, 10],
+				[`HomingThistle`, 5, 10],
+				[`Sunflower`, 6, 10],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 6, 10, false]]),
+			spawnPlants([
+				[`Sunflower`, 7, 10],
+				[`Sunflower`, 7, 11],
+				[`Sunflower`, 6, 11],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 7, 11, false]]),
+			new Action({
+				dig: { x: 8, y: 10 },
+			}),
+			spawnPlants([
+				[`HomingThistle`, 7, 12],
+				[`Rotobaga`, 8, 10],
+				[`Sunflower`, 8, 11],
+				[`Sunflower`, 8, 12],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnZombies([
+				[`Conehead`, 0, 8],
+				[`Conehead`, 1, 15],
+				[`Conehead`, 15, 8],
+				[`Conehead`, 4, 0],
+				[`Conehead`, 7, 15],
+				[`Basic`, 0, 14],
+				[`Basic`, 0, 2],
+				[`Basic`, 4, 0],
+				[`Basic`, 15, 14],
+				[`Basic`, 0, 15],
+				[`Basic`, 5, 15],
+			]),
+			movePlayers([[`bopduwopyop`, 6, 12, false]]),
+			spawnPlants([
+				[`HomingThistle`, 5, 11],
+				[`IcebergLettuce`, 7, 13],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 5, 12, false]]),
+			spawnPlants([
+				[`HomingThistle`, 4, 11],
+				[`Rotobaga`, 4, 12],
+				[`Peashooter`, 6, 12, 0, 1],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 0, 1]]),
+			spawnPlants([
+				[`HomingThistle`, 5, 12],
+				[`Rotobaga`, 6, 13],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnPlants([
+				[`Rotobaga`, 6, 14],
+				[`WallNut`, 6, 15],
+				[`Peashooter`, 6, 14, -1, 0],
+			]),
+			movePlayers([[`bopduwopyop`, 6, 14, false]]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnPlants([
+				[`Sunflower`, 7, 13],
+				[`Sunflower`, 5, 13],
+				[`Sunflower`, 5, 14],
+				[`HomingThistle`, 7, 14],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 7, 13, false]]),
+			spawnPlants([
+				[`Rotobaga`, 8, 13],
+				[`HomingThistle`, 8, 14],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 8, 13, false]]),
+			spawnPlants([
+				[`Rotobaga`, 9, 13],
+				[`HomingThistle`, 9, 14],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 8, 12, false]]),
+			spawnPlants([
+				[`Rotobaga`, 9, 12],
+				[`HomingThistle`, 9, 11],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 9, 13, false]]),
+			spawnPlants([
+				[`HomingThistle`, 10, 14],
+				[`Sunflower`, 10, 12],
+				[`Sunflower`, 10, 13],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 10, 14, false]]),
+			spawnPlants([
+				[`HomingThistle`, 11, 13],
+				[`WallNut`, 9, 15],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnZombies([
+				[`Buckethead`, 0, 12],
+				[`Buckethead`, 4, 15],
+				[`Buckethead`, 15, 3],
+				[`Buckethead`, 6, 0],
+				[`Conehead`, 9, 15],
+				[`Conehead`, 0, 8],
+				[`Conehead`, 1, 15],
+				[`Conehead`, 15, 8],
+				[`Conehead`, 4, 0],
+				[`Conehead`, 7, 15],
+				[`Basic`, 0, 14],
+				[`Basic`, 0, 2],
+				[`Basic`, 4, 0],
+				[`Basic`, 15, 14],
+				[`Basic`, 0, 15],
+				[`Basic`, 5, 15],
+			]),
+			new Action({
+				show_seed: `Jalapeno`,
+			}),
+			new Action({
+				dig: {
+					x: 11,
+					y: 12,
+				},
+			}),
+			spawnPlants([
+				[`Jalapeno`, 10, 15],
+				[`HomingThistle`, 11, 14],
+				[`Rotobaga`, 11, 12],
+			]),
+			movePlayers([[`bopduwopyop`, 11, 13, false]]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnPlants([
+				[`Peashooter`, 12, 12, -1, 0],
+				[`HomingThistle`, 12, 14],
+				[`Sunflower`, 12, 13],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 12, 13, false]]),
+			spawnPlants([
+				[`HomingThistle`, 13, 14],
+				[`Rotobaga`, 13, 13],
+				[`Sunflower`, 13, 12],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, 13, 14, false]]),
+			spawnPlants([
+				[`HomingThistle`, 14, 14],
+				[`Rotobaga`, 14, 13],
+				[`IcebergLettuce`, 14, 15],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			spawnPlants([
+				[`HomingThistle`, 14, 12],
+				[`WallNut`, 12, 15],
+			]),
+			movePlayers([[`bopduwopyop`, 1, -1]]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			spawnPlants([
+				[`Rotobaga`, 12, 11],
+				[`HomingThistle`, 13, 11],
+			]),
+			new Action({
+				end_turn: true,
+			}),
+			new Action({
+				show_seed: `Starfruit`,
+			}),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			new Action({
+				end_turn: true,
+			}),
+			movePlayers([[`bopduwopyop`, -1, -1]]),
+			spawnPlants([
+				[`Starfruit`, 10, 10],
+				[`Rotobaga`, 11, 11],
+				[`HomingThistle`, 10, 11],
+			]),
 		],
 	},
 };

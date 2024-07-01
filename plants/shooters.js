@@ -224,8 +224,8 @@ module.exports = {
 					this.shoot(action_list, new Movement(-1, 0)),
 					this.shoot(action_list, new Movement(0, 1)),
 					this.shoot(action_list, new Movement(0, -1)),
-					this.shoot(action_list, new Movement(2, 1)),
-					this.shoot(action_list, new Movement(2, -1)),
+					this.shoot(action_list, new Movement(1, 1)),
+					this.shoot(action_list, new Movement(1, -1)),
 				],
 			});
 		}

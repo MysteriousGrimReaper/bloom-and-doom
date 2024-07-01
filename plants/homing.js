@@ -5,7 +5,7 @@ class HomingThistle extends Plant {
 	constructor(data) {
 		super({
 			name: `Homing Thistle`,
-			sun_cost: 250,
+			sun_cost: 325,
 			damage: 1,
 			hidden: true,
 		});
@@ -24,12 +24,12 @@ class HomingThistle extends Plant {
 			target_zombie.damage(this.damage);
 			return new Action({
 				render: {
-					effect: `target.png`,
+					effect: `target`,
 					position: target_zombie.position,
 				},
 			});
 		}
-		return new Action({});
+		return new Action({ notes: `no zombie targeted` });
 	}
 }
 class Cattail extends Plant {

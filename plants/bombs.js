@@ -74,7 +74,7 @@ module.exports = {
 				sun_cost: 150,
 				health: 0,
 
-				cooldown: 8,
+				cooldown: 10,
 				hidden: true,
 			});
 			Object.assign(this, data);
