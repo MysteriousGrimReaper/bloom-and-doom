@@ -20,7 +20,7 @@ class Lilypad extends Plant {
 			)
 		);
 		return new Action({
-			notes: `Plant order edited`,
+			sun_cost: this.sun_cost,
 		});
 	}
 }

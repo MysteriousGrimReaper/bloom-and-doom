@@ -51,9 +51,9 @@ function hasMoved(players) {
 		}),
 	});
 }
-const end_turn = () => {
+const end_turn = (times = 1) => {
 	return new Action({
-		end_turn: true,
+		end_turn: times,
 	});
 };
 console.log();
@@ -423,6 +423,10 @@ module.exports = {
 			movePlayers([
 				[`AMS`, 1, 1],
 				[`Cube492`, 0, 1],
+				[`Lillith Lazuli`, 10, 5, false],
+				[`Bradicus`, 0, 1],
+				[`CT`, 4, 4, false],
+				[`The CAACN`, 0, 3],
 			]),
 			spawnPlants([
 				[`Peashooter`, 14, 2, 0, 1, `Bradicus`],
@@ -431,6 +435,49 @@ module.exports = {
 			new Action({
 				show_seed: `Lilypad`,
 			}),
+			new Action({
+				player: `Lillith Lazuli`,
+				exhaust: 2,
+			}),
+			new Action({
+				show_seed: `Infinut`,
+				set_timer: {
+					zombie: 1,
+					plant: 1,
+				},
+			}),
+			end_turn(),
+			new Action({
+				show_seed: `SnowPea`,
+			}),
+			spawnZombies([
+				[`Basic`, 0, 10],
+				[`Basic`, 0, 15],
+				[`Basic`, 5, 15],
+				[`Basic`, 10, 15],
+				[`Basic`, 14, 15],
+				[`Basic`, 15, 8],
+				[`Basic`, 15, 8],
+			]),
+			new Action({
+				set_timer: {
+					tide: 1,
+					plant: 3,
+					zombie: 5,
+				},
+			}),
+			new Action({
+				sun_cost: 2100,
+			}),
+			spawnPlants([
+				[`Peashooter`, 3, 5, 0, 1, `CT`],
+				[`Lilypad`, 0, 4, , , `arno`],
+			]),
+			movePlayers([
+				[`AMS`, 1, 0],
+				[`The CAACN`, -1, 1],
+				[`arno`, 0, 1],
+			]),
 		],
 	},
 	test: {
@@ -444,35 +491,21 @@ module.exports = {
 		actions: [
 			new Action({ begin_turn: true }),
 			new Action({
-				new_plant: `Sunflower`,
-				position: new Movement(11, 0),
+				show_seed: `all`,
 			}),
-			new Action({
-				new_plant: `Sunflower`,
-				position: new Movement(0, 1),
-			}),
-			new Action({
-				end_turn: true,
-			}),
-			new Action({
-				new_plant: `Sunflower`,
-				position: new Movement(9, 0),
-			}),
-			new Action({
-				end_turn: 20,
-			}),
-			new Action({
-				new_plant: `Snapdragon`,
-				position: new Movement(5, 5),
-				direction: new Movement(0, 2),
-			}),
-			new Action({
-				new_zombie: `Basic`,
-				position: new Movement(5, 9),
-			}),
-			new Action({
-				end_turn: 3,
-			}),
+			end_turn(),
+			spawnPlants([[`LightningReed`, 6, 6]]),
+			end_turn(2),
+			spawnPlants([[`LightningReed`, 6, 7]]),
+			end_turn(2),
+			spawnPlants([[`LightningReed`, 6, 5]]),
+			end_turn(),
+			spawnZombies([
+				[`Basic`, 10, 6],
+				[`Basic`, 11, 6],
+				[`Basic`, 12, 6],
+			]),
+			end_turn(4),
 		],
 	},
 	m: {

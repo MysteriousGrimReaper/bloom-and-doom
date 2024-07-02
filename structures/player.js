@@ -1,9 +1,11 @@
 const { loadImage } = require("canvas");
 const path = require("path");
+const Action = require("./action");
 module.exports = class Player {
 	constructor(data) {
 		this.health = 3;
 		this.has_acted = false;
+		this.exhaustion = 0;
 		Object.assign(this, data);
 		this.max_health = this.health;
 	}
@@ -13,7 +15,9 @@ module.exports = class Player {
 		);
 	}
 	get displayName() {
-		return `${this.has_acted ? `` : `• `}${this.name}`;
+		return `${this.has_acted || this.exhaustion > 0 ? `` : `• `}${
+			this.name
+		}${this.exhaustion > 0 ? ` (⚠️ ${this.exhaustion})` : ``}`;
 	}
 	act() {
 		this.has_acted = true;
@@ -22,5 +26,12 @@ module.exports = class Player {
 	reset_act() {
 		this.has_acted = false;
 		return this;
+	}
+	onEndTurn(action_list) {
+		this.exhaustion--;
+		return new Action({
+			player: this.name,
+			exhaust: this.exhaustion,
+		});
 	}
 };

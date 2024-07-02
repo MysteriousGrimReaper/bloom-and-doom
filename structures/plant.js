@@ -2,6 +2,7 @@ const { loadImage } = require("canvas");
 const path = require("path");
 const Action = require("./action.js");
 const Movement = require("./movement.js");
+const { Tiles } = require("./enums.js");
 module.exports = class Plant {
 	/**
 	 *
@@ -22,8 +23,16 @@ module.exports = class Plant {
 			path.join(__dirname, `../assets/plants/${this.name}.png`)
 		);
 	}
-	onPlant() {
+	onPlant(action_list) {
 		this.cooldown_timer = this.cooldown;
+		if (
+			!(this.aquatic || this.amphibious || this.flying) &&
+			action_list.tile_map[
+				this.position.x + this.position.y * action_list.board_width
+			] == Tiles.Water
+		) {
+			this.health -= 10000;
+		}
 		return new Action({
 			sun_cost: this.sun_cost,
 			notes: `Planting ${this.name}`,

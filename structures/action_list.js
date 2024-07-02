@@ -14,6 +14,7 @@ module.exports = class ActionList extends Array {
 	constructor(data) {
 		super();
 		this.sun = 0;
+		this.game_timers = { zombie: 0, plant: 0 };
 		this.player_list = [];
 		this.zombie_list = [];
 		this.plant_list = [];
@@ -154,6 +155,11 @@ module.exports = class ActionList extends Array {
 			if (this[i].actions) {
 				this.splice(i + 1, 0, ...this[i].actions);
 			}
+			if (target_player) {
+				if (this[i].exhaust) {
+					target_player.exhaustion = this[i].exhaust;
+				}
+			}
 			if (this[i].dig) {
 				const plant_index = this.plant_list.findIndex(
 					(p) =>
@@ -203,22 +209,32 @@ module.exports = class ActionList extends Array {
 				try {
 					this.seed_slot_list[this[i].show_seed].hidden = false;
 				} catch (error) {
-					console.log(error);
-					console.log(Object.keys(almanac));
-					throw Error(
-						`${this[i].show_seed} is not a plant. See above for list of accepted plants.`
-					);
+					if (this[i].show_seed != `all`) {
+						console.log(error);
+						console.log(Object.keys(almanac));
+						throw Error(
+							`${this[i].show_seed} is not a plant. See above for list of accepted plants.`
+						);
+					}
+					Object.keys(almanac).forEach((key) => {
+						this.seed_slot_list[key].hidden = false;
+					});
 				}
 			}
 			if (this[i].hide_seed) {
 				try {
 					this.seed_slot_list[this[i].hide_seed].hidden = true;
 				} catch (error) {
-					console.log(error);
-					console.log(Object.keys(almanac));
-					throw Error(
-						`${this[i].hide_seed} is not a plant. See above for list of accepted plants.`
-					);
+					if (this[i].hide_seed != `all`) {
+						console.log(error);
+						console.log(Object.keys(almanac));
+						throw Error(
+							`${this[i].hide_seed} is not a plant. See above for list of accepted plants.`
+						);
+					}
+					Object.keys(almanac).forEach((key) => {
+						this.seed_slot_list[key].hidden = true;
+					});
 				}
 			}
 			if (this[i].new_plant) {
@@ -300,6 +316,13 @@ module.exports = class ActionList extends Array {
 						this.splice(i + actions_added, 0, plant_action);
 					}
 				}
+				for (let p of this.player_list) {
+					const player_action = p.onEndTurn(this);
+					if (player_action) {
+						actions_added++;
+						this.splice(i + actions_added, 0, player_action);
+					}
+				}
 
 				for (let z of this.zombie_list) {
 					const zombie_action = z.onEndTurn(this);
@@ -329,6 +352,12 @@ module.exports = class ActionList extends Array {
 				for (let p of this.player_list) {
 					p.reset_act();
 				}
+				for (let t of Object.keys(this.game_timers)) {
+					this.game_timers[t] -= 1;
+				}
+			}
+			if (this[i].set_timer) {
+				Object.assign(this.game_timers, this[i].set_timer);
 			}
 			if (this[i].act) {
 				this.player_list.find((p) => p.name == this[i].act).act();

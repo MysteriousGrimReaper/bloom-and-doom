@@ -235,7 +235,7 @@ module.exports = {
 			super({
 				name: `Rotobaga`,
 				sun_cost: 350,
-
+				cooldown: 5,
 				projectile_sprite: `rutabaga`,
 				flying: true,
 				hidden: true,

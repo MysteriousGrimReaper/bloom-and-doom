@@ -34,16 +34,13 @@ class PotatoMine extends Plant {
 	}
 	onDeath(action_list) {
 		if (this.recharge_timer <= 0) {
-			const { zombie_list } = action_list;
-			zombie_list.forEach((z) => {
-				const cost = Math.max(
-					Math.abs(z.position.x - this.position.x),
-					Math.abs(z.position.y - this.position.y)
-				);
-				if (cost <= 0) {
-					z.damage(25);
-				}
-			});
+			for (const z of action_list.nearSquare(
+				this.position,
+				0,
+				`zombies`
+			)) {
+				z.damage(25, `explosion`);
+			}
 			return new Action({
 				render: {
 					position: this.position,
@@ -62,6 +59,17 @@ module.exports = {
 				recharge_timer: 0,
 				aquatic: true,
 				explosion_sprite: `kelp`,
+				hidden: true,
+			});
+			Object.assign(this, data);
+		}
+	},
+	Squash: class Squash extends PotatoMine {
+		constructor(data) {
+			super({
+				name: `Squash`,
+				recharge_timer: 0,
+				sun_cost: 50,
 				hidden: true,
 			});
 			Object.assign(this, data);
@@ -146,7 +154,7 @@ module.exports = {
 			zombie_list.forEach((z) => {
 				const cost = z.position.y == this.position.y;
 				if (cost) {
-					z.damage(10);
+					z.damage(8);
 					z.addStatus({ name: `frozen`, time: 4 });
 				}
 			});

@@ -44,6 +44,8 @@ const {
 	board_width,
 	seed_slot_list,
 	show_projectiles,
+	clock,
+	game_timers,
 } = actions;
 let last_turn_index = actions.length;
 while (!actions[last_turn_index]?.end_turn && last_turn_index >= 0) {
@@ -90,11 +92,28 @@ async function drawBG() {
 	// Write sun value
 	ctx.fillStyle = `rgb(255 255 0)`;
 	ctx.font = "45px Archivo";
-	ctx.fillText(`☀️ ${sun}`, 1300, 100);
+	ctx.fillText(`☀️ ${sun}`, 1030, 100);
 
+	// Write timers for zombie, new plant choice, and tide shift
+	ctx.fillStyle = `#DDD`;
+	ctx.fillText(`⏰ ${clock}`, 1300, 100);
+	ctx.font = `20px Archivo`;
+	if (game_timers.zombie > 0) {
+		ctx.fillStyle = `#999`;
+		ctx.fillText(`🧟 ${game_timers.zombie}⏰`, 1500, 30);
+	}
+	if (game_timers.plant > 0) {
+		ctx.fillStyle = `#2e2`;
+		ctx.fillText(`🌱 ${game_timers.plant}⏰`, 1500, 60);
+	}
+	if (game_timers.tide > 0) {
+		ctx.fillStyle = `#29e`;
+		ctx.fillText(`🌊 ${game_timers.tide}⏰`, 1500, 90);
+	}
 	// Draw bg under players
 	const board_color = "#FFF090";
 	const water_color = "#0000FF30";
+	ctx.font = `45px Archivo`;
 	ctx.strokeStyle = board_color;
 	ctx.fillStyle = board_color + "30";
 
@@ -220,10 +239,8 @@ async function drawBG() {
 				Math.sqrt(
 					Math.pow(p.direction.x, 2) + Math.pow(p.direction.y, 2)
 				);
-			console.log(py_normal);
 			let angle = Math.atan(py_normal / px_normal);
 			if (py_normal == 0) {
-				console.log(`py_normal is 0`);
 				angle = px_normal < 0 ? Math.PI : 0;
 			}
 			const left_angle = angle - Math.PI / 8;
@@ -421,14 +438,21 @@ async function drawBG() {
 			);
 			let draw_x = render.start_pos.x;
 			let draw_y = render.start_pos.y;
-			const repetitions = Math.min(
-				16,
-				isNaN(
-					Math.abs((draw_x - render.end_pos.x) / render.direction.x)
-				)
-					? Math.abs((draw_y - render.end_pos.y) / render.direction.y)
-					: Math.abs((draw_x - render.end_pos.x) / render.direction.x)
-			);
+			const repetitions =
+				Math.min(
+					16,
+					isNaN(
+						Math.abs(
+							(draw_x - render.end_pos.x) / render.direction.x
+						)
+					)
+						? Math.abs(
+								(draw_y - render.end_pos.y) / render.direction.y
+						  )
+						: Math.abs(
+								(draw_x - render.end_pos.x) / render.direction.x
+						  )
+				) + 1;
 			let i = 0;
 			while (i < repetitions) {
 				ctx.globalAlpha = i / repetitions;

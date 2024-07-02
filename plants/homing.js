@@ -7,6 +7,7 @@ class HomingThistle extends Plant {
 			name: `Homing Thistle`,
 			sun_cost: 325,
 			damage: 1,
+			cooldown: 5,
 			hidden: true,
 		});
 		Object.assign(this, data);
