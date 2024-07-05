@@ -148,6 +148,7 @@ module.exports = class ActionList extends Array {
 		let sun = 0;
 
 		for (let i = 0; i < this.length; i++) {
+			// console.log(this[i]);
 			const target_player = this[i].player
 				? this.player_list.find((p) => p.name == this[i].player)
 				: false;
@@ -191,13 +192,30 @@ module.exports = class ActionList extends Array {
 			if (this[i].attack_zombie) {
 				const z_index = this.zombie_list.findIndex(
 					(p) =>
-						p.x == this[i].attack_zombie.x &&
-						p.y == this[i].attack_zombie.y
+						p.position.x == this[i].attack_zombie.x &&
+						p.position.y == this[i].attack_zombie.y
 				);
 				this.zombie_list[z_index].damage(
 					this[i].attack_zombie.damage,
 					this[i].attack_zombie.damage_type
 				);
+			}
+			if (this[i].attack_player) {
+				const p_index = this.player_list.findIndex(
+					(p) =>
+						p.position.x == this[i].attack_player.x &&
+						p.position.y == this[i].attack_player.y
+				);
+				if (p_index != -1) {
+					this.player_list[p_index].damage(
+						this[i].attack_player.damage,
+						this[i].attack_player.damage_type
+					);
+				} else {
+					console.log(
+						`no player found at ${this[i].attack_player.x} ${this[i].attack_player.y}`
+					);
+				}
 			}
 			if (this[i].set_tiles) {
 				this.setTiles(this[i].set_tiles);
@@ -389,6 +407,29 @@ module.exports = class ActionList extends Array {
 					throw new Error(
 						`Error at index ${i}: ${entity_list[j].name} out of bounds (${entity_list[j].position.x}, ${entity_list[j].position.y})`
 					);
+				}
+			}
+			for (let l of this.plant_list) {
+				switch (this.tile_map[l.position.y][l.position.x]) {
+					case Tiles.None:
+						if (l.aquatic) {
+							l.health -= 10000;
+						}
+						break;
+					case Tiles.Water:
+						if (!(l.aquatic || l.flying || l.amphibious)) {
+							l.health -= 10000;
+						}
+						break;
+					case Tiles.Gold:
+						this.splice(
+							i + 1,
+							0,
+							new Action({
+								sun_gain: 5,
+							})
+						);
+						break;
 				}
 			}
 			for (let l of [

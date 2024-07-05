@@ -19,6 +19,10 @@ module.exports = class Player {
 			this.name
 		}${this.exhaustion > 0 ? ` (⚠️ ${this.exhaustion})` : ``}`;
 	}
+	damage(hp, type = null) {
+		this.health -= hp;
+		return this;
+	}
 	act() {
 		this.has_acted = true;
 		return this;

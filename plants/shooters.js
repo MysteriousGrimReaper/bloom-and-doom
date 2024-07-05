@@ -9,6 +9,7 @@ class Peashooter extends Plant {
 			damage: 1,
 			cooldown: 1,
 			projectile_sprite: `pea`,
+			hidden: false,
 		});
 		Object.assign(this, data);
 	}
@@ -60,6 +61,10 @@ class Peashooter extends Plant {
 			return new Action({});
 		} else {
 			const z_index = zombie_list.indexOf(zombie_colliding);
+			const z_position = new Movement(
+				zombie_list[z_index].position.x,
+				zombie_list[z_index].position.y
+			);
 			zombie_list[z_index].damage(projectile.damage);
 			if (this.apply_effects) {
 				zombie_list[z_index].addStatus(...this.apply_effects);
@@ -67,7 +72,7 @@ class Peashooter extends Plant {
 			return new Action({
 				render: {
 					start_pos: this.position,
-					end_pos: zombie_list[z_index].position,
+					end_pos: z_position,
 					direction: projectile.direction,
 					projectile: `${this.projectile_sprite}.png`,
 				},

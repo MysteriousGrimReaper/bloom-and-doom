@@ -10,6 +10,7 @@ class PotatoMine extends Plant {
 			recharge_timer: 4,
 			cooldown: 6,
 			explosion_sprite: `spudow`,
+			hidden: false,
 		});
 		Object.assign(this, data);
 	}

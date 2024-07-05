@@ -7,6 +7,7 @@ class WallNut extends Plant {
 			sun_cost: 50,
 			health: 6,
 			cooldown: 5,
+			hidden: false,
 		});
 		Object.assign(this, data);
 	}
@@ -22,6 +23,7 @@ module.exports = {
 				max_health: 4,
 				cooldown: 10,
 				hidden: true,
+				fillStyle: `#6154cf`
 			});
 			Object.assign(this, data);
 		}

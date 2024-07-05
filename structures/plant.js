@@ -11,7 +11,7 @@ module.exports = class Plant {
 	constructor(data) {
 		this.position = new Movement(0, 0);
 		this.health = 1;
-
+		this.hidden = true;
 		this.unlock_timer = 0;
 		this.cooldown = 1;
 		this.cooldown_timer = 0;
@@ -25,14 +25,6 @@ module.exports = class Plant {
 	}
 	onPlant(action_list) {
 		this.cooldown_timer = this.cooldown;
-		if (
-			!(this.aquatic || this.amphibious || this.flying) &&
-			action_list.tile_map[
-				this.position.x + this.position.y * action_list.board_width
-			] == Tiles.Water
-		) {
-			this.health -= 10000;
-		}
 		return new Action({
 			sun_cost: this.sun_cost,
 			notes: `Planting ${this.name}`,
@@ -43,7 +35,7 @@ module.exports = class Plant {
 			notes: `${this.name} eaten by zombie`,
 		});
 	}
-	onEndTurn() {
+	onEndTurn(action_list) {
 		return new Action({
 			notes: `Default action: do nothing (${this.name})`,
 		});

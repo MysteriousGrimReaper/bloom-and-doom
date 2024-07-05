@@ -10,6 +10,7 @@ class Sunflower extends Plant {
 			sun_cost: 50,
 			sun_production: 25,
 			cooldown: 0,
+			hidden: false,
 		});
 		Object.assign(this, data);
 	}

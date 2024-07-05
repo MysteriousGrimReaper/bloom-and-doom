@@ -478,6 +478,50 @@ module.exports = {
 				[`The CAACN`, -1, 1],
 				[`arno`, 0, 1],
 			]),
+			end_turn(),
+			new Action({
+				set_tiles: `................................................................ww............wwwww..........wwwwwww........wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
+			}),
+			new Action({
+				attack_zombie: { x: 0, y: 5, damage: 5 },
+			}),
+			spawnPlants([
+				[`Lilypad`, 3, 5, , , `CT`],
+				[`SnowPea`, 14, 1, 0, 1, `Bradicus`],
+			]),
+			movePlayers([
+				[`AMS`, 1, -1],
+				[`Cube492`, 0, 1],
+			]),
+			end_turn(),
+			spawnPlants([
+				[`Lilypad`, 10, 6, , , `Lillith Lazuli`],
+				[`Infinut`, 5, 3, , , `CT`],
+				[`Peashooter`, 13, 1, 0, 1, `AMS`],
+				[`WallNut`, 14, 3, , , `Bradicus`],
+				[`TwinSunflower`, 4, 2],
+			]),
+			hasMoved([`arno`]),
+			end_turn(),
+			new Action({
+				sun_cost: 50,
+				notes: `cube mystery box`,
+			}),
+			spawnPlants([
+				[`Peashooter`, 10, 6, 0, 1, `Lillith Lazuli`],
+				[`LightningReed`, 5, 2, , , `Cube492`],
+				[`Lilypad`, 14, 3, , , `Bradicus`],
+			]),
+			movePlayers([
+				[`Bradicus`, 0, 1],
+				[`Tatters`, 0, 1],
+			]),
+			new Action({
+				set_timer: {
+					plant: 3,
+				},
+				notes: `PLANT MUTATION`,
+			}),
 		],
 	},
 	test: {
@@ -495,9 +539,9 @@ module.exports = {
 			}),
 			end_turn(),
 			spawnPlants([[`LightningReed`, 6, 6]]),
-			end_turn(2),
+			end_turn(3),
 			spawnPlants([[`LightningReed`, 6, 7]]),
-			end_turn(2),
+			end_turn(3),
 			spawnPlants([[`LightningReed`, 6, 5]]),
 			end_turn(),
 			spawnZombies([
@@ -506,6 +550,11 @@ module.exports = {
 				[`Basic`, 12, 6],
 			]),
 			end_turn(4),
+			new Action({
+				attack_player: { x: 0, y: 0, damage: 2 },
+			}),
+			spawnPlants([[`HeavenlyPeach`, 1, 1]]),
+			end_turn(10),
 		],
 	},
 	m: {

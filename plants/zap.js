@@ -31,7 +31,7 @@ class LightningReed extends Plant {
 					1,
 					`zombies`
 				);
-				console.log(nearby_zombies);
+				// console.log(nearby_zombies);
 				for (const z of nearby_zombies) {
 					if (!zap_list.includes(z)) {
 						zap_list.push(z);
