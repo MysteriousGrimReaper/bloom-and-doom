@@ -10,8 +10,8 @@ class IcebergLettuce extends Plant {
 		});
 		Object.assign(this, data);
 	}
-	onDeath(action_list) {
-		const near_zombies = action_list.near(this.position, 0, `zombies`);
+	onDeath() {
+		const near_zombies = this.action_list.near(this.position, 0, `zombies`);
 		if (near_zombies.length > 0) {
 			near_zombies[0].status.push({ name: `frozen`, time: 5 });
 		}

@@ -30,8 +30,8 @@ class Peashooter extends Plant {
 		}
 		return range_output;
 	}
-	shoot(action_list, direction, damage = this.damage, render_options = {}) {
-		const { zombie_list, board_width, board_height } = action_list;
+	shoot(direction, damage = this.damage, render_options = {}) {
+		const { zombie_list, board_width, board_height } = this.action_list;
 		const projectile = {
 			x: this.position.x,
 			y: this.position.y,
@@ -79,8 +79,8 @@ class Peashooter extends Plant {
 			});
 		}
 	}
-	pierce(action_list, direction, damage = this.damage, render_options = {}) {
-		const { zombie_list, board_width, board_height } = action_list;
+	pierce(direction, damage = this.damage, render_options = {}) {
+		const { zombie_list, board_width, board_height } = this.action_list;
 		let repetitions = 1;
 		const projectile = {
 			x: this.position.x,
@@ -125,8 +125,8 @@ class Peashooter extends Plant {
 			actions: render_list,
 		});
 	}
-	onEndTurn(action_list) {
-		return this.shoot(action_list, this.direction);
+	onEndTurn() {
+		return this.shoot(this.direction);
 	}
 }
 class MelonPult extends Peashooter {
@@ -143,8 +143,8 @@ class MelonPult extends Peashooter {
 		});
 		Object.assign(this, data);
 	}
-	shoot(action_list, direction) {
-		const { zombie_list, board_width, board_height } = action_list;
+	shoot(direction) {
+		const { zombie_list, board_width, board_height } = this.action_list;
 		const projectile = {
 			x: this.position.x,
 			y: this.position.y,
@@ -223,14 +223,14 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
+		onEndTurn() {
 			return new Action({
 				actions: [
-					this.shoot(action_list, new Movement(-1, 0)),
-					this.shoot(action_list, new Movement(0, 1)),
-					this.shoot(action_list, new Movement(0, -1)),
-					this.shoot(action_list, new Movement(1, 1)),
-					this.shoot(action_list, new Movement(1, -1)),
+					this.shoot(new Movement(-1, 0)),
+					this.shoot(new Movement(0, 1)),
+					this.shoot(new Movement(0, -1)),
+					this.shoot(new Movement(1, 1)),
+					this.shoot(new Movement(1, -1)),
 				],
 			});
 		}
@@ -247,13 +247,13 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
+		onEndTurn() {
 			return new Action({
 				actions: [
-					this.shoot(action_list, new Movement(-1, 1)),
-					this.shoot(action_list, new Movement(1, 1)),
-					this.shoot(action_list, new Movement(1, -1)),
-					this.shoot(action_list, new Movement(-1, -1)),
+					this.shoot(new Movement(-1, 1)),
+					this.shoot(new Movement(1, 1)),
+					this.shoot(new Movement(1, -1)),
+					this.shoot(new Movement(-1, -1)),
 				],
 			});
 		}
@@ -268,15 +268,15 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
+		onEndTurn() {
 			let opposite_side = new Movement(
 				this.direction.x,
 				this.direction.y
 			);
 			opposite_side.x = -this.direction.x;
 			opposite_side.y = -this.direction.y;
-			const front_shot = this.shoot(action_list, this.direction);
-			const rev_shot = this.shoot(action_list, opposite_side, 2);
+			const front_shot = this.shoot(this.direction);
+			const rev_shot = this.shoot(opposite_side, 2);
 			rev_shot.render.projectile = `twopea.png`;
 			return new Action({ actions: [front_shot, rev_shot] });
 		}
@@ -291,14 +291,14 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
+		onEndTurn() {
 			let left_side = new Movement(this.direction.y, this.direction.x);
 			let right_side = new Movement(-this.direction.y, -this.direction.x);
 			return new Action({
 				actions: [
-					this.shoot(action_list, this.direction),
-					this.shoot(action_list, left_side),
-					this.shoot(action_list, right_side),
+					this.shoot(this.direction),
+					this.shoot(left_side),
+					this.shoot(right_side),
 				],
 			});
 		}
@@ -314,8 +314,8 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
-			return this.pierce(action_list, this.direction);
+		onEndTurn() {
+			return this.pierce(this.direction);
 		}
 	},
 	Guacodile: class Guacodile extends Peashooter {
@@ -329,8 +329,8 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onDeath(action_list) {
-			const rush = this.pierce(action_list, this.direction, 4, {
+		onDeath() {
+			const rush = this.pierce(this.direction, 4, {
 				effect: `guacodilerush.png`,
 				alpha: 1,
 			});
@@ -400,7 +400,7 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
+		onEndTurn() {
 			this.mega_cabbage_timer--;
 			if (this.mega_cabbage_timer <= 0) {
 				this.projectile_sprite = `megacabbage`;
@@ -410,7 +410,7 @@ module.exports = {
 				this.projectile_sprite = `cabbage`;
 				this.damage = 1;
 			}
-			return this.shoot(action_list, this.direction);
+			return this.shoot(this.direction);
 		}
 	},
 	KernelPult: class KernelPult extends Peashooter {

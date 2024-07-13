@@ -12,8 +12,8 @@ class HomingThistle extends Plant {
 		});
 		Object.assign(this, data);
 	}
-	onEndTurn(action_list) {
-		const { zombie_list } = action_list;
+	onEndTurn() {
+		const { zombie_list } = this.action_list;
 		const cost_map = zombie_list.map(
 			(z) =>
 				Math.abs(z.position.x - this.position.x) +

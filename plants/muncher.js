@@ -23,14 +23,16 @@ class Chomper extends Plant {
 			)
 		);
 	}
-	onEndTurn(action_list) {
+	onEndTurn() {
 		this.eat_timer--;
 		if (this.eat_timer > 0) {
 			return new Action({
 				notes: `${this.name} eating, ${this.eat_timer} turns left`,
 			});
 		}
-		action_list.near(this.position, 2, `zombies`)[0].damage(25, `bite`);
+		this.action_list
+			.near(this.position, 2, `zombies`)[0]
+			.damage(25, `bite`);
 		this.eat_timer = 8;
 	}
 }

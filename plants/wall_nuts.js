@@ -23,7 +23,7 @@ module.exports = {
 				max_health: 4,
 				cooldown: 10,
 				hidden: true,
-				fillStyle: `#6154cf`
+				fillStyle: `#6154cf`,
 			});
 			Object.assign(this, data);
 		}
@@ -45,10 +45,12 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
-			action_list.near(this.position, 1, `zombies`).forEach((zombie) => {
-				zombie.damage(1);
-			});
+		onEndTurn() {
+			this.action_list
+				.near(this.position, 1, `zombies`)
+				.forEach((zombie) => {
+					zombie.damage(1);
+				});
 			return new Action({});
 		}
 	},
@@ -63,10 +65,12 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
-			action_list.near(this.position, 1, `zombies`).forEach((zombie) => {
-				zombie.damage(1);
-			});
+		onEndTurn() {
+			this.action_list
+				.near(this.position, 1, `zombies`)
+				.forEach((zombie) => {
+					zombie.damage(1);
+				});
 			if (this.health < this.max_health) {
 				this.health += 0.2;
 			}

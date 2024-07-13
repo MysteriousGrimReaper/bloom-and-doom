@@ -23,7 +23,7 @@ module.exports = class Plant {
 			path.join(__dirname, `../assets/plants/${this.name}.png`)
 		);
 	}
-	onPlant(action_list) {
+	onPlant() {
 		this.cooldown_timer = this.cooldown;
 		return new Action({
 			sun_cost: this.sun_cost,
@@ -35,7 +35,7 @@ module.exports = class Plant {
 			notes: `${this.name} eaten by zombie`,
 		});
 	}
-	onEndTurn(action_list) {
+	onEndTurn() {
 		return new Action({
 			notes: `Default action: do nothing (${this.name})`,
 		});

@@ -22,7 +22,7 @@ module.exports = class Zombie {
 		const poison = this.status.find((s) => s.name == `frozen`);
 		if (poison != undefined) {
 			if (poison.time > 0) {
-				this.damage(1)
+				this.damage(1);
 			} else {
 				this.status.splice(this.status.indexOf(poison), 1);
 			}
@@ -130,8 +130,8 @@ module.exports = class Zombie {
 			render: { position: this.position, effect: `dead.png` },
 		});
 	}
-	onEndTurn(action_list) {
-		const { player_list, plant_list } = action_list;
+	onEndTurn() {
+		const { player_list, plant_list } = this.action_list;
 		if (!this.evalStatuses()) {
 			return new Action({
 				zombie_status: ``,
@@ -155,12 +155,19 @@ module.exports = class Zombie {
 				p.health -= this.bite;
 			}
 		});
-		const render = this.position.x == original_pos[0] && this.position.y == original_pos[1] ? {} : {
-			render: {
-				position: new Movement(original_pos[0], original_pos[1]),
-				effect: `zombieoutline.png`,
-			},
-		}
+		const render =
+			this.position.x == original_pos[0] &&
+			this.position.y == original_pos[1]
+				? {}
+				: {
+						render: {
+							position: new Movement(
+								original_pos[0],
+								original_pos[1]
+							),
+							effect: `zombieoutline.png`,
+						},
+				  };
 		return new Action(render);
 	}
 };

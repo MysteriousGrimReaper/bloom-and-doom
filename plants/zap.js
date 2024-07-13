@@ -12,9 +12,9 @@ class LightningReed extends Plant {
 		});
 		Object.assign(this, data);
 	}
-	onEndTurn(action_list) {
+	onEndTurn() {
 		const render_list = [];
-		action_list.near(this.position, 3, `zombies`).forEach((p) => {
+		this.action_list.near(this.position, 3, `zombies`).forEach((p) => {
 			render_list.push(
 				new Action({
 					render: {
@@ -26,7 +26,7 @@ class LightningReed extends Plant {
 			);
 			const zap_list = [p];
 			const chain_zap = (zombie) => {
-				const nearby_zombies = action_list.nearSquare(
+				const nearby_zombies = this.action_list.nearSquare(
 					zombie.position,
 					1,
 					`zombies`

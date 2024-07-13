@@ -31,7 +31,7 @@ module.exports = class Player {
 		this.has_acted = false;
 		return this;
 	}
-	onEndTurn(action_list) {
+	onEndTurn() {
 		this.exhaustion--;
 		return new Action({
 			player: this.name,

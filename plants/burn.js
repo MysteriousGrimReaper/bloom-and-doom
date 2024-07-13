@@ -13,10 +13,10 @@ class Snapdragon extends Plant {
 		});
 		Object.assign(this, data);
 	}
-	onEndTurn(action_list) {
+	onEndTurn() {
 		const square_center = this.position.vAdd(this.direction);
 
-		action_list
+		this.action_list
 			.nearSquare(square_center, 1, `zombies`)
 			.forEach((zombie) => {
 				zombie.damage(this.damage, `fire`);

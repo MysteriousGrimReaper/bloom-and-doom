@@ -12,7 +12,8 @@ class Lilypad extends Plant {
 		});
 		Object.assign(this, data);
 	}
-	onPlant(action_list) {
+	onPlant() {
+		const { action_list } = this;
 		action_list.plant_list.unshift(
 			...action_list.plant_list.splice(
 				action_list.plant_list.length - 1,

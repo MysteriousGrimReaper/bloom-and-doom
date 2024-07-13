@@ -10,15 +10,17 @@ const zalmanac = Object.entries(z).reduce((acc, cv) => {
 	return acc;
 }, {});
 const { Tiles } = require("./enums.js");
+const EntityList = require("./entity_list.js");
 module.exports = class ActionList extends Array {
 	constructor(data) {
 		super();
 		this.sun = 0;
 		this.game_timers = { zombie: 0, plant: 0 };
-		this.player_list = [];
-		this.zombie_list = [];
-		this.plant_list = [];
-		this.corpse_list = [];
+		// reformat everything to the new entity list system
+		this.player_list = new EntityList({ action_list: this });
+		this.zombie_list = new EntityList({ action_list: this });
+		this.plant_list = new EntityList({ action_list: this });
+		this.corpse_list = new EntityList({ action_list: this });
 		this.seed_slot_list = almanac;
 		this.zombie_almanac_list = zalmanac;
 		this.board_width = 16;
@@ -140,7 +142,11 @@ module.exports = class ActionList extends Array {
 		);
 	}
 	setPlayers(player_list) {
-		this.player_list = player_list;
+		for (let p of player_list) {
+			p.action_list = this;
+		}
+		this.player_list.push(...player_list);
+
 		return this;
 	}
 	validate() {
@@ -257,7 +263,9 @@ module.exports = class ActionList extends Array {
 			}
 			if (this[i].new_plant) {
 				try {
-					this[i].plant = new a[this[i].new_plant]();
+					this[i].plant = new a[this[i].new_plant]({
+						action_list: this,
+					});
 				} catch (error) {
 					console.log(error);
 					console.log(Object.keys(almanac));
@@ -299,11 +307,13 @@ module.exports = class ActionList extends Array {
 				}
 
 				this.plant_list.push(this[i].plant);
-				this.splice(i + 1, 0, this[i].plant.onPlant(this));
+				this.splice(i + 1, 0, this[i].plant.onPlant());
 			}
 			if (this[i].new_zombie) {
 				try {
-					this[i].zombie = new z[this[i].new_zombie]();
+					this[i].zombie = new z[this[i].new_zombie]({
+						action_list: this,
+					});
 				} catch (error) {
 					console.log(error);
 					console.log(Object.keys(zalmanac));
@@ -328,14 +338,14 @@ module.exports = class ActionList extends Array {
 				}
 				let actions_added = 0;
 				for (let p of this.plant_list) {
-					const plant_action = p.onEndTurn(this);
+					const plant_action = p.onEndTurn();
 					if (plant_action) {
 						actions_added++;
 						this.splice(i + actions_added, 0, plant_action);
 					}
 				}
 				for (let p of this.player_list) {
-					const player_action = p.onEndTurn(this);
+					const player_action = p.onEndTurn();
 					if (player_action) {
 						actions_added++;
 						this.splice(i + actions_added, 0, player_action);
@@ -343,7 +353,7 @@ module.exports = class ActionList extends Array {
 				}
 
 				for (let z of this.zombie_list) {
-					const zombie_action = z.onEndTurn(this);
+					const zombie_action = z.onEndTurn();
 					if (zombie_action) {
 						actions_added++;
 						this.splice(i + actions_added, 0, zombie_action);
@@ -440,7 +450,7 @@ module.exports = class ActionList extends Array {
 				l.forEach((entity, index) => {
 					if (entity.health <= 0) {
 						if (typeof entity.onDeath === "function") {
-							this.splice(i + 1, 0, entity.onDeath(this));
+							this.splice(i + 1, 0, entity.onDeath());
 						}
 
 						this.corpse_list.push(l.splice(index, 1));

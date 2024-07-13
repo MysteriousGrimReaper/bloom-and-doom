@@ -14,18 +14,20 @@ class Aloe extends Plant {
 		});
 		Object.assign(this, data);
 	}
-	onEndTurn(action_list) {
-		action_list.nearSquare(this.position, 1, this.to_heal).forEach((p) => {
-			if (
-				Math.abs(p.position.x - this.position.x) == 1 ||
-				Math.abs(p.position.y - this.position.y) == 1
-			) {
-				if (p.health < p.max_health) {
-					p.health += 0.4;
-					p.health = Math.min(p.health, p.max_health);
+	onEndTurn() {
+		this.action_list
+			.nearSquare(this.position, 1, this.to_heal)
+			.forEach((p) => {
+				if (
+					Math.abs(p.position.x - this.position.x) == 1 ||
+					Math.abs(p.position.y - this.position.y) == 1
+				) {
+					if (p.health < p.max_health) {
+						p.health += 0.4;
+						p.health = Math.min(p.health, p.max_health);
+					}
 				}
-			}
-		});
+			});
 		const actions = Array.from(Array(9)).map((_, index) => {
 			return new Action({
 				tile_render: {

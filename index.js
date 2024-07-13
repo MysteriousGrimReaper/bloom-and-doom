@@ -20,13 +20,13 @@ const actions = new ActionList()
 const valid = actions.validate();
 if (valid) {
 	console.log("\x1b[32m", "All set! Find the game log in game.json.");
+	/*
 	fs.writeFile(`game.json`, JSON.stringify(actions.toJSON()), (err) => {
 		if (err) throw err;
 		console.log(`The file has been saved!`);
 	});
+	*/
 }
-
-console.log(`Done`);
 
 // draw image
 const { createCanvas, loadImage, registerFont } = require("canvas");

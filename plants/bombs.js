@@ -33,9 +33,9 @@ class PotatoMine extends Plant {
 					: `Potato mine timer: ${this.recharge_timer}`,
 		});
 	}
-	onDeath(action_list) {
+	onDeath() {
 		if (this.recharge_timer <= 0) {
-			for (const z of action_list.nearSquare(
+			for (const z of this.action_list.nearSquare(
 				this.position,
 				0,
 				`zombies`
@@ -88,8 +88,8 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onDeath(action_list) {
-			const { zombie_list } = action_list;
+		onDeath() {
+			const { zombie_list } = this.action_list;
 			zombie_list.forEach((z) => {
 				const cost = Math.max(
 					Math.abs(z.position.x - this.position.x),
@@ -120,8 +120,8 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onDeath(action_list) {
-			const { zombie_list } = action_list;
+		onDeath() {
+			const { zombie_list } = this.action_list;
 			zombie_list.forEach((z) => {
 				const cost = z.position.y == this.position.y;
 				if (cost) {
@@ -150,8 +150,8 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onDeath(action_list) {
-			const { zombie_list } = action_list;
+		onDeath() {
+			const { zombie_list } = this.action_list;
 			zombie_list.forEach((z) => {
 				const cost = z.position.y == this.position.y;
 				if (cost) {

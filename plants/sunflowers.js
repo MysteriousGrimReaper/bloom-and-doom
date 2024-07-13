@@ -99,8 +99,8 @@ module.exports = {
 			});
 			Object.assign(this, data);
 		}
-		onEndTurn(action_list) {
-			const moonflowers = action_list
+		onEndTurn() {
+			const moonflowers = this.action_list
 				.nearSquare(this.position, 1)
 				.filter(
 					(p) =>
