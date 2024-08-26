@@ -1,4 +1,5 @@
 const Action = require("../structures/action");
+const EntityList = require("../structures/entity_list");
 const Movement = require("../structures/movement");
 const Plant = require("../structures/plant");
 
@@ -16,8 +17,8 @@ class Snapdragon extends Plant {
 	onEndTurn() {
 		const square_center = this.position.vAdd(this.direction);
 
-		this.action_list
-			.nearSquare(square_center, 1, `zombies`)
+		this.action_list.zombie_list
+			.near(square_center, 1, EntityList.Square)
 			.forEach((zombie) => {
 				zombie.damage(this.damage, `fire`);
 			});

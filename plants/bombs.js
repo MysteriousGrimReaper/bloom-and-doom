@@ -2,6 +2,7 @@ const Plant = require("../structures/plant.js");
 const Action = require("../structures/action.js");
 const { loadImage } = require("canvas");
 const path = require("path");
+const EntityList = require("../structures/entity_list.js");
 class PotatoMine extends Plant {
 	constructor(data) {
 		super({
@@ -35,10 +36,10 @@ class PotatoMine extends Plant {
 	}
 	onDeath() {
 		if (this.recharge_timer <= 0) {
-			for (const z of this.action_list.nearSquare(
+			for (const z of this.action_list.zombie_list.near(
 				this.position,
 				0,
-				`zombies`
+				EntityList.Square
 			)) {
 				z.damage(25, `explosion`);
 			}

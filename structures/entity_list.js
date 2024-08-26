@@ -6,7 +6,8 @@ module.exports = class EntityList extends Array {
 	static Diamond = 0;
 	static Square = 1;
 	static Circle = 2;
-	near(x, y, radius, shape) {
+	near(position, radius, shape = EntityList.Diamond) {
+		const { x, y } = position;
 		const distance_functions = [
 			(to_x, to_y) => {
 				const d = Math.abs(to_x - x) + Math.abs(to_y - y);
